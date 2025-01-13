@@ -40,10 +40,7 @@ def run():
 
     parser = get_parser(site_names[0], driver)
 
-    data = parser.parse()
-
-
-#     эту дату потом в цсв грузить надо
+    parser.parse()
 
 
 if __name__ == "__main__":
