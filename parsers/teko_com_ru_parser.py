@@ -62,7 +62,9 @@ class TekoParser(BaseParser):
     def save_to_csv(self, filename="files\\teco_com\\products.csv"):
         """Сохранение данных в CSV."""
         with open(filename, mode="w", encoding="utf-8", newline="") as file:
-            writer = csv.DictWriter(file, fieldnames=["name", "price", "availability", "delivery_deadline", "technical_specs", "link"])
+            writer = csv.DictWriter(file,
+                                    fieldnames=["name", "price", "availability", "delivery_deadline", "technical_specs",
+                                                "link"])
             writer.writeheader()
             for product in self.products:
                 writer.writerow({

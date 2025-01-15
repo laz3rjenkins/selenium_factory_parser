@@ -100,13 +100,6 @@ class SensorComParser(BaseParser):
                 'category_link': item.find_element(By.TAG_NAME, 'a').get_attribute('href')
             })
 
-        # TODO ВРЕМЕННОЕ РЕШЕНИЕ, ПОТОМ БРАТЬ
-        categories_info.pop(1)
-        categories_info.pop(1)
-        categories_info.pop(1)
-        categories_info.pop(1)
-        categories_info.pop(1)
-
         # проходим по списку категорий и берем из них ссылки
         for item in categories_info:
             if not item:
