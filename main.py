@@ -29,8 +29,8 @@ def get_driver(headless: bool = False):
 
 def run():
     site_names = [
-        "sensor-com.ru",
-        # "https://teko-com.ru",
+        # "sensor-com.ru",
+        "teko-com.ru",
         # "https://mega-k.com",
         # "https://beskonta.ru",
         # "https://balluff-rus.ru",
@@ -38,9 +38,9 @@ def run():
     ]
     driver = get_driver(False)
 
-    parser = get_parser(site_names[0], driver)
-
-    parser.parse()
+    for site in site_names:
+        parser = get_parser(site, driver)
+        parser.parse()
 
 
 if __name__ == "__main__":
