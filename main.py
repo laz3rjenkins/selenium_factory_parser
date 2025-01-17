@@ -30,8 +30,8 @@ def get_driver(headless: bool = False):
 def run():
     site_names = [
         # "sensor-com.ru",
-        "teko-com.ru",
-        # "https://mega-k.com",
+        # "teko-com.ru",
+        "mega-k.com",
         # "https://beskonta.ru",
         # "https://balluff-rus.ru",
         # "https://sensoren.ru"
@@ -39,8 +39,12 @@ def run():
     driver = get_driver(False)
 
     for site in site_names:
-        parser = get_parser(site, driver)
-        parser.parse()
+        try:
+            parser = get_parser(site, driver)
+            parser.parse()
+        except Exception as exc:
+            print(f"Ошибка при парсинге {site}", exc)
+
 
 
 if __name__ == "__main__":

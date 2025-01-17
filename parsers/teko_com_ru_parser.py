@@ -72,7 +72,7 @@ class TekoParser(BaseParser):
                     "price": product["price"],
                     "availability": product["availability"],
                     "delivery_deadline": product["delivery_deadline"],
-                    "technical_specs": product['technical_specs'],
+                    "technical_specs": product['technical_specs'].replace('\n', '; '),
                     "link": product["link"],
                 })
 
@@ -101,8 +101,3 @@ class TekoParser(BaseParser):
             self.current_page += 1
 
         self.save_to_csv()
-        self.close()
-
-    def close(self):
-        """Закрытие драйвера."""
-        self.driver.quit()
