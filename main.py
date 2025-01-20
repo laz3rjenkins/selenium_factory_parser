@@ -31,9 +31,9 @@ def run():
     site_names = [
         # "sensor-com.ru",
         # "teko-com.ru",
-        "mega-k.com",
-        # "https://beskonta.ru",
-        # "https://balluff-rus.ru",
+        # "mega-k.com",
+        # "beskonta.ru",
+        "balluff-rus.ru",
         # "https://sensoren.ru"
     ]
     driver = get_driver(False)
@@ -44,7 +44,6 @@ def run():
             parser.parse()
         except Exception as exc:
             print(f"Ошибка при парсинге {site}", exc)
-
 
 
 if __name__ == "__main__":
