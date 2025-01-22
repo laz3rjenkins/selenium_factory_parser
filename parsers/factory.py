@@ -3,6 +3,7 @@ from parsers.base_parser import BaseParser
 from parsers.beskonta_ru_parser import BeskontaRuParser
 from parsers.megak_ru_parser import MegakRuParser
 from parsers.sensor_com_parser import SensorComParser
+from parsers.sensoren_parser import SensorenParser
 from parsers.teko_com_ru_parser import TekoParser
 
 
@@ -13,6 +14,7 @@ def get_parser(site_name: str, driver) -> BaseParser:
         "mega-k.com": MegakRuParser,
         "beskonta.ru": BeskontaRuParser,
         "balluff-rus.ru": BalluffParser,
+        "sensoren.ru": SensorenParser,
     }
 
     if site_name not in parsers:

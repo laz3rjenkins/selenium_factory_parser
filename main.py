@@ -33,8 +33,8 @@ def run():
         # "teko-com.ru",
         # "mega-k.com",
         # "beskonta.ru",
-        "balluff-rus.ru",
-        # "https://sensoren.ru"
+        # "balluff-rus.ru",
+        "sensoren.ru"
     ]
     driver = get_driver(False)
 

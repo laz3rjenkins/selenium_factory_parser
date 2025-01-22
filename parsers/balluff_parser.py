@@ -114,11 +114,11 @@ class BalluffParser(BaseParser):
     def parse(self):
         catalog_links = [
             "https://balluff-rus.ru/catalog/2d_datchiki/",
-            # "https://balluff-rus.ru/catalog/lazernye_datchiki_rasstoyaniya/",
-            # "https://balluff-rus.ru/catalog/induktivnye_datchiki_rasstoyaniya/",
-            # "https://balluff-rus.ru/catalog/datchiki_davleniya/",
+            "https://balluff-rus.ru/catalog/lazernye_datchiki_rasstoyaniya/",
+            "https://balluff-rus.ru/catalog/induktivnye_datchiki_rasstoyaniya/",
+            "https://balluff-rus.ru/catalog/datchiki_davleniya/",
             "https://balluff-rus.ru/catalog/datchiki_temperatury/",
-            # "https://balluff-rus.ru/catalog/emkostnye_datchiki/",
+            "https://balluff-rus.ru/catalog/emkostnye_datchiki/",
         ]
 
         self.driver.delete_all_cookies()
