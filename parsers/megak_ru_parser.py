@@ -151,12 +151,13 @@ class MegakRuParser(BaseParser):
                         for second_subcategory in second_lvl_categories:
                             print(f"Парсинг подкатегории {second_subcategory['name']}")
                             filename = sanitize_filename(
-                                f"{link['name']}_{second_subcategory['name']} ({subcategory['name']}).csv".replace(" ", "_"))
+                                f"{link['name']}_{second_subcategory['name']} ({subcategory['name']}).csv".replace(" ",
+                                                                                                                   "_"))
                             self.get_data_from_category(second_subcategory)
                             print(f"Загрузка данных в файл {filename}")
                             save_to_csv(self.products, filename)
                 except Exception as e:
-                    print(f"Не удалось получить данные из {subcategory['link']}", e.with_traceback())
+                    print(f"Не удалось получить данные из {subcategory['link']}", e)
 
 
 def save_to_csv(data, filename):
@@ -164,22 +165,18 @@ def save_to_csv(data, filename):
 
     filepath = os.path.join("files\\megak_ru", filename)
 
-    # Определяем заголовки
-    headers = ['Название', 'Цена', 'Артикул', 'Описание', 'Ссылка']
-
     # Сохраняем данные в CSV-файл
     # encoding='utf-8'
-    with open(filepath, mode='w', encoding='utf-8', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(headers)
-
-        # Заполняем строки из данных
+    with open(filepath, mode="w", encoding="windows-1251", newline="") as file:
+        writer = csv.DictWriter(file,
+                                fieldnames=['name', 'price', 'art', 'info', 'link'])
+        writer.writeheader()
         for item in data:
-            writer.writerow([
-                item['name'],
-                item['price'],
-                item['articul'],
-                item['description'].replace('\n', '; '),
-                item['link']
-            ])
+            writer.writerow({
+                "name": item['name'],
+                "price": item['price'],
+                "art": item['articul'],
+                "info": item['description'].replace('\n', '; '),
+                "link": item['link'],
+            })
     print(f"Данные сохранены в файл: {filepath}")
