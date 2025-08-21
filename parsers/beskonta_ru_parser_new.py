@@ -117,8 +117,11 @@ class BeskontaRuNewParser(BaseParser):
         except Exception as exception:
             print(exception)
 
-    def save_to_csv(self, filename="files\\beskonta_ru_new\\beskonta_data.csv"):
+    def save_to_csv(self):
         """Сохранение данных в CSV."""
+
+        filename = os.path.join("files", "beskonta_ru_new", "beskonta_data.csv")
+
         with open(filename, mode="w", encoding="utf-8", newline="") as file:
             writer = csv.DictWriter(file,
                                     fieldnames=["name", "price", "info", "link"])

@@ -200,7 +200,7 @@ class MegakRuNewParser(BaseParser):
 def save_to_csv(data, filename):
     filename = filename.replace(" ", "_")
 
-    filepath = os.path.join("files\\megak_ru_new", filename)
+    filepath = os.path.join("files", "megak_ru_new", filename)
 
     # Сохраняем данные в CSV-файл
     # encoding='utf-8'

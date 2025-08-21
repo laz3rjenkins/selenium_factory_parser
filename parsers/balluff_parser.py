@@ -39,7 +39,7 @@ class BalluffParser(BaseParser):
     def save_to_csv(self, filename):
         """Сохранение данных в CSV."""
 
-        filename = f"files\\balluff_rus\\balluff_data_{sanitize_filename(filename)}.csv"
+        filename = os.path.join("files", "balluff_rus", f"balluff_data_{sanitize_filename(filename)}.csv")
 
         with open(filename, mode="w", encoding="utf-8", newline="") as file:
             writer = csv.DictWriter(file,

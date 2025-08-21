@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+import os
 
 from parsers.base_parser import BaseParser
 
@@ -59,8 +60,11 @@ class TekoParser(BaseParser):
         except Exception as e:
             print(f"Ошибка при загрузке товаров: {e}")
 
-    def save_to_csv(self, filename="files\\teco_com\\products.csv"):
+    def save_to_csv(self):
         """Сохранение данных в CSV."""
+
+        filename = os.path.join("files", "teco_com", "products.csv")
+
         with open(filename, mode="w", encoding="utf-8", newline="") as file:
             writer = csv.DictWriter(file,
                                     fieldnames=["name", "price", "availability", "delivery_deadline", "technical_specs",
