@@ -201,6 +201,7 @@ def save_to_csv(data, filename):
     filename = filename.replace(" ", "_")
 
     filepath = os.path.join("files", "megak_ru_new", filename)
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     # Сохраняем данные в CSV-файл
     # encoding='utf-8'

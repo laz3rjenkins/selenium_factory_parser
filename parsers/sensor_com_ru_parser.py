@@ -126,6 +126,7 @@ class SensorComRuParser(BaseParser):
         """Сохранение данных в CSV."""
 
         filename = os.path.join("files", "sensor_com", f"sensor_com_data_{sanitize_filename(filename)}.csv")
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
 
         with open(filename, mode="w", encoding="utf-8", newline="") as file:
             writer = csv.DictWriter(file,

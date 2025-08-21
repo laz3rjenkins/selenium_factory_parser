@@ -40,6 +40,7 @@ class BalluffParser(BaseParser):
         """Сохранение данных в CSV."""
 
         filename = os.path.join("files", "balluff_rus", f"balluff_data_{sanitize_filename(filename)}.csv")
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
 
         with open(filename, mode="w", encoding="utf-8", newline="") as file:
             writer = csv.DictWriter(file,
