@@ -2,6 +2,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+import traceback
 
 from parsers.factory import get_parser
 
@@ -43,7 +44,8 @@ def run():
             parser = get_parser(site, driver)
             parser.parse()
         except Exception as exc:
-            print(f"Ошибка при парсинге {site}", exc.with_traceback())
+            print(f"\nОшибка при парсинге {site}: {exc}")
+            traceback.print_exc()
 
 
 if __name__ == "__main__":
