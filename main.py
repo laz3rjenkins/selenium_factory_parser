@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import traceback
+import os
 
 from parsers.factory import get_parser
 
@@ -16,12 +17,18 @@ def get_driver(headless: bool = False):
        """
     options = Options()
     if headless:
-        options.add_argument("--headless=new") 
+        options.add_argument("--headless=new")
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--start-maximized")
     options.add_argument("--disable-extensions")
+
+    tmp_profile = "/home/user_parser/chrome-profile"
+    os.makedirs(tmp_profile, exist_ok=True)
+    options.add_argument(f"--user-data-dir={tmp_profile}")
+
+    options.add_argument("--remote-debugging-port=9222")
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
