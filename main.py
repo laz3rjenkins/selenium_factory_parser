@@ -39,7 +39,7 @@ def run():
         "balluff-rus.ru",
         "sensoren.ru"
     ]
-    driver = get_driver(False)
+    driver = get_driver(True)
 
     for site in site_names:
         try:
