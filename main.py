@@ -24,12 +24,6 @@ def get_driver(headless: bool = False):
     options.add_argument("--start-maximized")
     options.add_argument("--disable-extensions")
 
-    tmp_profile = "/home/user_parser/chrome-profile"
-    os.makedirs(tmp_profile, exist_ok=True)
-    options.add_argument(f"--user-data-dir={tmp_profile}")
-
-    options.add_argument("--remote-debugging-port=9222")
-
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     return driver
