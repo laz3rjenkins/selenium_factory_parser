@@ -122,7 +122,7 @@ class BalluffParser(BaseParser):
             "https://balluff-rus.ru/catalog/emkostnye_datchiki/",
         ]
 
-        self.driver.delete_all_cookies()
+        # self.driver.delete_all_cookies()
 
         for catalog_link in catalog_links:
             self.driver.get(self.get_url(catalog_link))
