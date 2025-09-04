@@ -9,7 +9,7 @@ import os
 from parsers.factory import get_parser
 
 
-def get_driver(headless: bool = False):
+def get_driver(headless: bool = False) -> webdriver.Chrome:
     """
        Создает экземпляр Selenium WebDriver с заданными настройками.
 
@@ -56,16 +56,19 @@ def run():
         "balluff-rus.ru",
         "sensoren.ru"
     ]
-    driver = None
 
     for site in site_names:
-        driver = ensure_driver(driver, headless=True)
+        driver = None
         try:
+            driver = get_driver(headless=False)
             parser = get_parser(site, driver)
             parser.parse()
         except Exception as exc:
             print(f"\nОшибка при парсинге {site}: {exc}")
             traceback.print_exc()
+        finally:
+            if driver:
+                driver.quit()
 
 
 if __name__ == "__main__":
