@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import traceback
+from selenium.common.exceptions import InvalidSessionIdException, WebDriverException
 import os
 
 from parsers.factory import get_parser
@@ -30,6 +31,22 @@ def get_driver(headless: bool = False):
     return driver
 
 
+def is_driver_alive(driver):
+    if driver is None:
+        return False
+    try:
+        driver.title
+        return True
+    except (InvalidSessionIdException, WebDriverException):
+        return False
+
+
+def ensure_driver(driver, headless=False):
+    if driver is None or not is_driver_alive(driver):
+        driver = get_driver(headless)
+    return driver
+
+
 def run():
     site_names = [
         "sensor-com.ru",
@@ -39,9 +56,10 @@ def run():
         "balluff-rus.ru",
         "sensoren.ru"
     ]
-    driver = get_driver(True)
+    driver = None
 
     for site in site_names:
+        driver = ensure_driver(driver, headless=True)
         try:
             parser = get_parser(site, driver)
             parser.parse()
