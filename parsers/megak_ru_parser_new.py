@@ -129,6 +129,7 @@ class MegakRuNewParser(BaseParser):
                         "info": specs_with_separator,
                         "link": link,
                     })
+                    break
                 except Exception as e:
                     print(f"Ошибка при обработке товара: {e}")
 
@@ -201,7 +202,7 @@ def save_to_csv(data, filename):
     filename = filename.replace(" ", "_")
 
     filepath = os.path.join("files", "megak_ru_new", filename)
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
     # Сохраняем данные в CSV-файл
     # encoding='utf-8'
