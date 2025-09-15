@@ -129,7 +129,7 @@ class MegakRuNewParser(BaseParser):
                         "info": specs_with_separator,
                         "link": link,
                     })
-                    break
+
                 except Exception as e:
                     print(f"Ошибка при обработке товара: {e}")
 
