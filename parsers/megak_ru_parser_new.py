@@ -206,7 +206,7 @@ def save_to_csv(data, filename):
 
     # Сохраняем данные в CSV-файл
     # encoding='utf-8'
-    with open(filepath, mode="w", encoding="windows-1251", newline="") as file:
+    with open(filepath, mode="w", encoding="utf-8", newline="") as file:
         writer = csv.DictWriter(file,
                                 fieldnames=['name', 'price', 'art', 'description', 'info', 'link'])
         writer.writeheader()
