@@ -1,0 +1,34 @@
+WARNING (10-12-2025 16:51:41): started parse sensoren.ru
+
+WARNING (10-12-2025 16:51:41): начал парсинг по ссылке https://sensoren.ru/catalog/shchelevye_datchiki/
+
+WARNING (10-12-2025 16:55:22): Message: no such element: Unable to locate element: {"method":"css selector","selector":".price"}
+  (Session info: chrome=143.0.7499.41); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x000000010481ae10 cxxbridge1$str$ptr + 3028012
+1   chromedriver                        0x0000000104812cd0 cxxbridge1$str$ptr + 2994924
+2   chromedriver                        0x000000010430eb1c _RNvCsgXDX2mvAJAg_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 74196
+3   chromedriver                        0x00000001043559d8 _RNvCsgXDX2mvAJAg_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 364688
+4   chromedriver                        0x000000010434b758 _RNvCsgXDX2mvAJAg_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 323088
+5   chromedriver                        0x0000000104396978 _RNvCsgXDX2mvAJAg_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 630832
+6   chromedriver                        0x000000010434a17c _RNvCsgXDX2mvAJAg_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 317492
+7   chromedriver                        0x00000001047df360 cxxbridge1$str$ptr + 2783612
+8   chromedriver                        0x00000001047e2ac4 cxxbridge1$str$ptr + 2797792
+9   chromedriver                        0x00000001047bf5f4 cxxbridge1$str$ptr + 2653200
+10  chromedriver                        0x00000001047e3334 cxxbridge1$str$ptr + 2799952
+11  chromedriver                        0x00000001047affc4 cxxbridge1$str$ptr + 2590176
+12  chromedriver                        0x000000010480224c cxxbridge1$str$ptr + 2926696
+13  chromedriver                        0x00000001048023cc cxxbridge1$str$ptr + 2927080
+14  chromedriver                        0x0000000104812928 cxxbridge1$str$ptr + 2993988
+15  libsystem_pthread.dylib             0x0000000188f85c08 _pthread_start + 136
+16  libsystem_pthread.dylib             0x0000000188f80ba8 thread_start + 8
+
+
+WARNING (10-12-2025 16:55:22): не удалось получить цену у Оптический щелевой датчик этикетки Telemecanique XUVE04M3KSNM8
+
+WARNING (10-12-2025 16:55:27): Обработана страница 1
+
+WARNING (10-12-2025 16:55:27): щелевые датчики has 44 elements
+
+WARNING (10-12-2025 16:55:27): saving to file щелевые датчики
+

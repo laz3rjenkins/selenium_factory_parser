@@ -128,9 +128,10 @@ class SensorComRuParser(BaseParser):
         filename = os.path.join("files", "sensor_com", f"sensor_com_data_{sanitize_filename(filename)}.csv")
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-        with open(filename, mode="w", encoding="utf-8", newline="") as file:
+        with open(filename, mode="w", encoding="utf-8-sig", newline="") as file:
             writer = csv.DictWriter(file,
-                                    fieldnames=["name", "price", "info", "link", "is_available"])
+                                    fieldnames=["name", "price", "info", "link", "is_available"],
+                                    delimiter=";")
             writer.writeheader()
             for product in self.products:
                 writer.writerow({

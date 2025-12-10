@@ -11,6 +11,7 @@ import time
 import json
 
 from parsers.base_parser import BaseParser
+from utils import logger
 
 
 def sanitize_filename(filename: str) -> str:
@@ -24,6 +25,38 @@ def sanitize_filename(filename: str) -> str:
     sanitized = re.sub(r'_+', '_', sanitized)
 
     return sanitized
+
+def parse_product_info(characteristics: str) -> dict:
+    needed_keys = {
+        "Размер резьбы корпуса:",
+        "Размер цилиндрического корпуса, мм:",
+        "Размер прямоугольного корпуса, мм:",
+        "Расстояние срабатывания, мм:",
+        "Функция переключения:",
+        "Монтаж:",
+        "Температура эксплуатации Min, °C:",
+        "Температура эксплуатации Max, °C:",
+        "Длина кабеля, м:",
+        "Материал корпуса:",
+        "Напряжение питания, В:",
+        "Тип выходного сигнала:",
+        "Соединение:",
+    }
+
+    # превращаем строку в пары
+    parts = characteristics.split(";")
+    temp_dict = {}
+
+    for i in range(0, len(parts) - 1, 2):
+        key = parts[i].strip()
+        value = parts[i + 1].strip()
+        temp_dict[key] = value
+
+    # формируем результат: все needed_keys, если значение есть — берём, иначе ""
+    parsed = {key: temp_dict.get(key, "") for key in needed_keys}
+
+    return parsed
+    # return json.dumps(parsed, ensure_ascii=False, indent=None)
 
 
 class SensorenNewParser(BaseParser):
@@ -40,14 +73,14 @@ class SensorenNewParser(BaseParser):
 
     def has_content(self):
         try:
-            content = self.driver.find_element(By.CLASS_NAME, "catalog-list")
+            content = self.driver.find_element(By.CLASS_NAME, "catalog-items")
 
             if content:
                 return True
             else:
                 return False
         except selenium.common.exceptions.NoSuchElementException as exc:
-            print(exc.msg)
+            logger.warn(exc.msg)
             return False
 
     def open_new_tab(self):
@@ -64,48 +97,57 @@ class SensorenNewParser(BaseParser):
         """Сбор данных о товарах на текущей странице."""
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "catalog-list"))
+                EC.presence_of_element_located((By.CLASS_NAME, "catalog-items"))
             )
 
-            products = self.driver.find_elements(By.CLASS_NAME, "catalog-item")
+            products = self.driver.find_elements(By.CLASS_NAME, "catalog-element")
             product_links = []
             for product in products:
-                product_img = product.find_element(By.CLASS_NAME, "catalog-item__img")
-                product_tag_a = product_img.find_element(By.TAG_NAME, "a")
-
+                product_tag_a = product.find_element(By.TAG_NAME, "a")
                 product_link = product_tag_a.get_attribute('href').strip()
-
                 product_links.append(product_link)
 
             self.open_new_tab()
             for link in product_links:
                 try:
+                    product_info_dict = {}
                     self.driver.get(link)
                     time.sleep(3)
 
-                    product_title_element = self.driver.find_element(By.XPATH, "/html/body/div[5]/div[1]/h1")
-                    product_link = link
+                    product_title_element = self.driver.find_element(By.CLASS_NAME, "product-info-name")
                     product_name = product_title_element.text.strip()
+                    product_link = link
 
                     try:
                         try:
                             self.driver.execute_script("window.scrollBy(0, 500);")
                             time.sleep(.3)
                         except Exception as exception:
-                            print(exception)
-                        product_options = self.driver.find_element(By.CLASS_NAME, "product-page__center-info-data")
+                            logger.error(str(exception))
+                        product_options = self.driver.find_element(By.CLASS_NAME, "characteristics-all")
                         product_info = product_options.text.strip()
                         product_info = product_info.replace("\n", ";")
+                        product_info = parse_product_info(product_info)
+                        product_info_dict = product_info
+                        product_info = json.dumps(product_info, ensure_ascii=False, indent=None)
                     except Exception as e:
                         product_info = "Характеристики отсутствуют или не удалось получить"
 
-                    product_price = self.driver.find_element(By.CLASS_NAME, "product-price-count-actual").text.strip()
+                    product_price = ""
+                    try:
+                        price_block = self.driver.find_element(By.CLASS_NAME, "product-info__all-order")
+                        product_price = price_block.find_element(By.CLASS_NAME, "price").text.strip()
+                    except Exception as exception:
+                        logger.warn(str(exception))
+                        logger.warn(f"не удалось получить цену у {product_name}")
+
 
                     self.products.append({
                         'name': product_name,
                         'link': product_link,
                         'info': product_info,
                         'price': product_price,
+                        **product_info_dict,
                     })
 
                     log = {
@@ -113,6 +155,7 @@ class SensorenNewParser(BaseParser):
                         'link': product_link,
                         'info': product_info,
                         'price': product_price,
+                        **product_info_dict,
                         'page': self.current_page
                     }
 
@@ -123,46 +166,44 @@ class SensorenNewParser(BaseParser):
                             json.dump(log, file, ensure_ascii=False, indent=4)
                             # file.write("\n")
                     except Exception as e:
-                        print(f"Ошибка при записи log.txt: {e}")
+                        logger.error(f"Ошибка при записи log.txt: {e}")
 
                 except Exception as e:
-                    print(f"Ошибка при обработке товара: {e}")
+                    logger.error(f"Ошибка при обработке товара: {e}")
 
             self.close_current_tab()
 
         except Exception as e:
-            print(f"Ошибка при загрузке товаров: {e}")
+            logger.error(f"Ошибка при загрузке товаров: {e}")
 
-        print(f"Обработана страница {self.current_page}")
+        logger.warn(f"Обработана страница {self.current_page}")
 
     def parse(self):
         catalog_links = [
-            "https://sensoren.ru/catalog/datchiki-peremeshcheniy-i-rasstoyaniya/",  # 72
-            "https://sensoren.ru/catalog/datchiki-fizicheskikh-velichin/",  # 181
-            "https://sensoren.ru/catalog/opticheskie-datchiki-dlya-spetsialnykh-zadach/",  # 108
-            "https://sensoren.ru/catalog/beskontaktnye-datchiki-polozheniya-obekta/",  # 761
-            "https://sensoren.ru/catalog/promyshlennaya_bezopasnost/",  # 408
-            "https://sensoren.ru/catalog/datchiki_urovnya/",  # 49
-            "https://sensoren.ru/catalog/shchelevye_datchiki/",  # 21
+            # "https://sensoren.ru/catalog/datchiki-peremeshcheniy-i-rasstoyaniya/",  # 72
+            # "https://sensoren.ru/catalog/datchiki-fizicheskikh-velichin/",  # 181
+            # "https://sensoren.ru/catalog/opticheskie-datchiki-dlya-spetsialnykh-zadach/",  # 108
+            # "https://sensoren.ru/catalog/beskontaktnye-datchiki-polozheniya-obekta/",  # 761
+            # "https://sensoren.ru/catalog/promyshlennaya_bezopasnost/",  # 408
+            # "https://sensoren.ru/catalog/datchiki_urovnya/",  # 49 # 171
+            "https://sensoren.ru/catalog/shchelevye_datchiki/",  # 21 # 44
         ]
 
         self.driver.delete_all_cookies()
 
         for catalog_link in catalog_links:
-            print(f"начал парсинг по ссылке {catalog_link}")
+            logger.warn(f"начал парсинг по ссылке {catalog_link}")
 
             self.products = []
             self.current_page = 1
-            title = "title stub"
+            title = ""
             while True:
                 self.driver.get(self.get_url(catalog_link))
                 time.sleep(3)
 
                 print(f"current page {self.current_page}, catalog: {catalog_link}")
                 if self.current_page == 1:
-                    breadcrumbs = self.driver.find_element(By.CLASS_NAME, "ajax_breadcrumbs")
-                    title = breadcrumbs.find_element(By.TAG_NAME, "h1").text.strip()
-                    self.set_item_limit()
+                    title = self.driver.find_element(By.CLASS_NAME, "title-block").text.strip().lower()
 
                 if not self.has_content():
                     break
@@ -174,31 +215,29 @@ class SensorenNewParser(BaseParser):
                     self.save_to_csv(f"{self.current_page}_{title}")
                     self.products = []
 
-            print(f"{title} has {len(self.products)} elements")
+            logger.warn(f"{title} has {len(self.products)} elements")
             self.save_to_csv(title)
-
-    def set_item_limit(self):
-        select = self.driver.find_element(By.CLASS_NAME, "selectric-count_sort")
-        select.click()
-        time.sleep(.2)
-
-        select.find_element(By.CLASS_NAME, "last").click()
-        time.sleep(2)
 
     def save_to_csv(self, filename):
         """Сохранение данных в CSV."""
 
+        logger.warn(f"saving to file {filename}")
         filename = os.path.join("files", "sensoren_new", f"new_sensoren_data_{sanitize_filename(filename)}.csv")
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-        with open(filename, mode="w", encoding="utf-8", newline="") as file:
-            writer = csv.DictWriter(file,
-                                    fieldnames=["name", "price", "info", "link"])
+        if not self.products:
+            logger.warn("Нет данных для сохранения")
+            return
+
+        fieldnames = list(self.products[0].keys())
+
+        with open(filename, mode="w", encoding="utf-8-sig", newline="") as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames, delimiter=";")
             writer.writeheader()
+
             for product in self.products:
-                writer.writerow({
-                    "name": product["name"],
-                    "price": product["price"],
-                    "info": product["info"].replace('\n', '; '),
-                    "link": product["link"],
-                })
+                row = {key: product.get(key, "") for key in fieldnames}
+                if "info" in row:
+                    row["info"] = row["info"].replace("\n", "; ")
+                writer.writerow(row)
+

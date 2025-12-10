@@ -1,2 +1,4 @@
 .idea
- parsers/__pycache__
+files/*
+utils/__pycache__
+parsers/__pycache__

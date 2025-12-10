@@ -7,6 +7,7 @@ from selenium.common.exceptions import InvalidSessionIdException, WebDriverExcep
 import os
 
 from parsers.factory import get_parser
+from utils import logger
 
 
 def get_driver(headless: bool = False) -> webdriver.Chrome:
@@ -61,6 +62,8 @@ def run():
         driver = None
         try:
             driver = get_driver(headless=False)
+
+            logger.warn(f"started parse {site}")
             parser = get_parser(site, driver)
             parser.parse()
         except Exception as exc:

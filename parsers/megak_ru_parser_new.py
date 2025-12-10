@@ -102,8 +102,8 @@ class MegakRuNewParser(BaseParser):
                     time.sleep(3)
 
                     product_name = self.driver.find_element(By.CLASS_NAME, "page-title").text.strip()
-                    articul = self.driver.find_element(By.XPATH,
-                                                       "/html/body/div[6]/main/div/div[3]/div[3]/div[1]/div[1]/div[2]/div[2]/div[2]").text.strip()
+                    # articul = self.driver.find_element(By.XPATH,
+                    #                                    "/html/body/div[6]/main/div/div[3]/div[3]/div[1]/div[1]/div[2]/div[2]/div[2]").text.strip()
                     description = self.driver.find_element(By.CLASS_NAME, "details-tabs-deacription").text.strip()
 
                     try:
@@ -206,15 +206,15 @@ def save_to_csv(data, filename):
 
     # Сохраняем данные в CSV-файл
     # encoding='utf-8'
-    with open(filepath, mode="w", encoding="utf-8", newline="") as file:
+    with open(filepath, mode="w", encoding="utf-8-sig", newline="") as file:
         writer = csv.DictWriter(file,
-                                fieldnames=['name', 'price', 'art', 'description', 'info', 'link'])
+                                fieldnames=['name', 'price', 'description', 'info', 'link'],
+                                delimiter=";")
         writer.writeheader()
         for item in data:
             writer.writerow({
                 "name": item['name'],
                 "price": item['price'],
-                "art": item['articul'],
                 "description": item['description'],
                 "info": item['info'].replace('\n', '; '),
                 "link": item['link'],
