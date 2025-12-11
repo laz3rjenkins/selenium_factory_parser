@@ -33,6 +33,7 @@ class SensorComRuParser(BaseParser):
                 '$(".nativejs-select__placeholder")[1].click();$(".nativejs-select__option")[5].click();')
             time.sleep(.5)
         except Exception as e:
+            logger.error("show_maximum_products_count error " + str(e))
             return
 
     def calculate_max_page_count(self):
@@ -42,7 +43,7 @@ class SensorComRuParser(BaseParser):
 
             return int(max_page)
         except Exception as e:
-            logger.error(str(e))
+            logger.error("calculate_max_page_count error " + str(e))
             return 1
 
     def collect_product_data(self):
