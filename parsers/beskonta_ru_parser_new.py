@@ -139,7 +139,6 @@ class BeskontaRuNewParser(BaseParser):
 
     def parse(self):
         self.driver.delete_all_cookies()
-        logger.warn("started parse beskonta_ru_new")
         while True:
             logger.warn(f"current page: {self.current_page}")
             self.driver.get(get_url(page_size=45, page=self.current_page))

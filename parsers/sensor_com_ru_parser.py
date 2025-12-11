@@ -151,7 +151,7 @@ class SensorComRuParser(BaseParser):
         pagination_input.clear()
         pagination_input.send_keys(str(self.current_page))
         pagination_input.send_keys(Keys.ENTER)
-        time.sleep(1)
+        time.sleep(2)
 
 
 def sanitize_filename(filename: str) -> str:
