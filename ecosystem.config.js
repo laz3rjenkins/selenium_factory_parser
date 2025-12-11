@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "selen_parser",
       script: "main.py",
-      interpreter: "python3",
+      interpreter: "/home/selenium_factory_parser/venv/bin/python",
       cwd: "/home/selenium_factory_parser",
       watch: false,
       autorestart: true,
