@@ -11,13 +11,10 @@ from utils import logger
 
 
 def get_driver(headless: bool = False) -> webdriver.Chrome:
-    """
-       Создает экземпляр Selenium WebDriver с заданными настройками.
-
-       :param headless: Если True, запускает Selenium в фоновом режиме (без интерфейса браузера).
-       :return: Экземпляр WebDriver.
-       """
     options = Options()
+    unique_profile = f"/tmp/chrome_profile_{os.getpid()}"
+    options.add_argument(f"--user-data-dir={unique_profile}")
+
     if headless:
         options.add_argument("--headless=new")
         options.add_argument("--disable-gpu")
