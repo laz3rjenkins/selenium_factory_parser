@@ -180,12 +180,12 @@ class SensorenNewParser(BaseParser):
 
     def parse(self):
         catalog_links = [
-            # "https://sensoren.ru/catalog/datchiki-peremeshcheniy-i-rasstoyaniya/",  # 72
-            # "https://sensoren.ru/catalog/datchiki-fizicheskikh-velichin/",  # 181
-            # "https://sensoren.ru/catalog/opticheskie-datchiki-dlya-spetsialnykh-zadach/",  # 108
-            # "https://sensoren.ru/catalog/beskontaktnye-datchiki-polozheniya-obekta/",  # 761
-            # "https://sensoren.ru/catalog/promyshlennaya_bezopasnost/",  # 408
-            # "https://sensoren.ru/catalog/datchiki_urovnya/",  # 49 # 171
+            "https://sensoren.ru/catalog/datchiki-peremeshcheniy-i-rasstoyaniya/",  # 72
+            "https://sensoren.ru/catalog/datchiki-fizicheskikh-velichin/",  # 181
+            "https://sensoren.ru/catalog/opticheskie-datchiki-dlya-spetsialnykh-zadach/",  # 108
+            "https://sensoren.ru/catalog/beskontaktnye-datchiki-polozheniya-obekta/",  # 761
+            "https://sensoren.ru/catalog/promyshlennaya_bezopasnost/",  # 408
+            "https://sensoren.ru/catalog/datchiki_urovnya/",  # 49 # 171
             "https://sensoren.ru/catalog/shchelevye_datchiki/",  # 21 # 44
         ]
 

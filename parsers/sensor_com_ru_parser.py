@@ -11,6 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 from parsers.base_parser import BaseParser
+from utils import logger
 
 
 class SensorComRuParser(BaseParser):
@@ -41,7 +42,7 @@ class SensorComRuParser(BaseParser):
 
             return int(max_page)
         except Exception as e:
-            print(e)
+            logger.error(str(e))
             return 1
 
     def collect_product_data(self):
@@ -84,14 +85,14 @@ class SensorComRuParser(BaseParser):
                     })
 
                 except Exception as e:
-                    print(f"Ошибка при обработке товара: {e}")
+                    logger.error(f"Ошибка при обработке товара: {e}")
         except Exception as e:
-            print(f"Ошибка при загрузке товаров: {e}")
+            logger.error(f"Ошибка при загрузке товаров: {e}")
 
     def parse(self):
         catalog_links = [
-            # "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/induktivnyie/",
-            # "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/opticheskie/",
+            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/induktivnyie/",
+            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/opticheskie/",
             "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/ultrazvukovyie/",
             "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/emkostnyie-2/",
         ]
@@ -100,7 +101,7 @@ class SensorComRuParser(BaseParser):
         for catalog_link in catalog_links:
             self.driver.get(catalog_link)
             time.sleep(3)
-            print(f"начал парсинг по ссылке {catalog_link}")
+            logger.warn(f"начал парсинг по ссылке {catalog_link}")
 
             self.show_maximum_products_count()
             time.sleep(2)
@@ -110,7 +111,7 @@ class SensorComRuParser(BaseParser):
             self.max_page = self.calculate_max_page_count()
             title = self.driver.find_element(By.CLASS_NAME, "title-h1").text.strip()
             while True:
-                print(f"Парсинг {self.current_page} страницы")
+                logger.warn(f"Парсинг {self.current_page} страницы")
                 self.collect_product_data()
 
                 if self.current_page >= self.max_page:
@@ -119,8 +120,10 @@ class SensorComRuParser(BaseParser):
                 self.current_page += 1
                 self.go_to_the_next_page()
 
-            print(f"{title} has {len(self.products)} elements")
+            logger.warn(f"{title} has {len(self.products)} elements")
             self.save_to_csv(title)
+
+        logger.warn("sensor.com finished.")
 
     def save_to_csv(self, filename):
         """Сохранение данных в CSV."""

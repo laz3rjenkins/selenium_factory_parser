@@ -10,6 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 from parsers.base_parser import BaseParser
+from utils import logger
 
 
 def get_url(page=1, page_size=45, view_as="list"):
@@ -93,7 +94,7 @@ class BeskontaRuNewParser(BaseParser):
                             index += 1
 
                     except Exception as price_exc:
-                        print(price_exc)
+                        logger.error(str(price_exc))
 
                     product_price = self.driver.find_element(By.CLASS_NAME, "p-p-price").text.strip()
                     self.products.append({
@@ -111,11 +112,11 @@ class BeskontaRuNewParser(BaseParser):
                     })
 
                 except Exception as exc:
-                    print(f"Ошибка при обработке товара: {e}")
+                    logger.error(f"Ошибка при обработке товара: {exc}")
 
             self.close_current_tab()
         except Exception as exception:
-            print(exception)
+            logger.error(str(exception))
 
     def save_to_csv(self):
         """Сохранение данных в CSV."""
@@ -138,8 +139,9 @@ class BeskontaRuNewParser(BaseParser):
 
     def parse(self):
         self.driver.delete_all_cookies()
+        logger.warn("started parse beskonta_ru_new")
         while True:
-            print(f"current page: {self.current_page}")
+            logger.warn(f"current page: {self.current_page}")
             self.driver.get(get_url(page_size=45, page=self.current_page))
             time.sleep(3)
 

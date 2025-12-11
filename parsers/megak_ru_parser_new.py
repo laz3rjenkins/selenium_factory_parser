@@ -11,6 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 from parsers.base_parser import BaseParser
+from utils import logger
 
 
 def sanitize_filename(filename: str) -> str:
@@ -102,8 +103,6 @@ class MegakRuNewParser(BaseParser):
                     time.sleep(3)
 
                     product_name = self.driver.find_element(By.CLASS_NAME, "page-title").text.strip()
-                    # articul = self.driver.find_element(By.XPATH,
-                    #                                    "/html/body/div[6]/main/div/div[3]/div[3]/div[1]/div[1]/div[2]/div[2]/div[2]").text.strip()
                     description = self.driver.find_element(By.CLASS_NAME, "details-tabs-deacription").text.strip()
 
                     try:
@@ -112,7 +111,7 @@ class MegakRuNewParser(BaseParser):
                         self.driver.find_element(By.ID, 'tabOptions').click()
                         time.sleep(.3)
                     except Exception as exception:
-                        print(exception)
+                        logger.error(str(exception))
 
                     specs = self.driver.find_elements(By.CLASS_NAME, "properties-item")
                     specs_with_separator = ""
@@ -124,19 +123,18 @@ class MegakRuNewParser(BaseParser):
                     self.products.append({
                         "name": product_name,
                         "price": product_price,
-                        "articul": articul,
                         "description": description,
                         "info": specs_with_separator,
                         "link": link,
                     })
 
                 except Exception as e:
-                    print(f"Ошибка при обработке товара: {e}")
+                    logger.error(str(f"Ошибка при обработке товара: {e}"))
 
             self.close_current_tab()
 
         except Exception as e:
-            print(f"Ошибка при загрузке товаров: {e}")
+            logger.error(str(f"Ошибка при загрузке товаров: {e}"))
 
     def get_data_from_category(self, category_info):
         self.current_page = 1
@@ -172,6 +170,7 @@ class MegakRuNewParser(BaseParser):
         for link in sensor_links:
             self.driver.get(link['link'])
             time.sleep(3)
+            logger.warn(f"started parse {link['link']}")
 
             subcategories_links = self.get_subcategories_links()
             filename = ""
@@ -180,22 +179,22 @@ class MegakRuNewParser(BaseParser):
                     second_lvl_categories = self.get_second_lvl_category_links(subcategory)
 
                     if len(second_lvl_categories) == 0:
-                        print(f"В подкатегории {subcategory['name']} нет дополнительных категорий, начинаю парсить")
+                        logger.warn(f"В подкатегории {subcategory['name']} нет дополнительных категорий, начинаю парсить")
                         self.get_data_from_category(subcategory)
                         filename = sanitize_filename(f"{link['name']}_{subcategory['name']}.csv")
-                        print(f"Загрузка данных в файл {filename}")
+                        logger.warn(f"Загрузка данных в файл {filename}")
                         save_to_csv(self.products, filename)
                     else:
                         for second_subcategory in second_lvl_categories:
-                            print(f"Парсинг подкатегории {second_subcategory['name']}")
+                            logger.warn(f"Парсинг подкатегории {second_subcategory['name']}")
                             filename = sanitize_filename(
                                 f"{link['name']}_{second_subcategory['name']} ({subcategory['name']}).csv".replace(" ",
                                                                                                                    "_"))
                             self.get_data_from_category(second_subcategory)
-                            print(f"Загрузка данных в файл {filename}")
+                            logger.warn(f"Загрузка данных в файл {filename}")
                             save_to_csv(self.products, filename)
                 except Exception as e:
-                    print(f"Не удалось получить данные из {subcategory['link']}", e)
+                    logger.error(f"Не удалось получить данные из {subcategory['link']}: {str(e)}")
 
 
 def save_to_csv(data, filename):
@@ -204,8 +203,6 @@ def save_to_csv(data, filename):
     filepath = os.path.join("files", "megak_ru_new", filename)
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
-    # Сохраняем данные в CSV-файл
-    # encoding='utf-8'
     with open(filepath, mode="w", encoding="utf-8-sig", newline="") as file:
         writer = csv.DictWriter(file,
                                 fieldnames=['name', 'price', 'description', 'info', 'link'],
@@ -219,4 +216,4 @@ def save_to_csv(data, filename):
                 "info": item['info'].replace('\n', '; '),
                 "link": item['link'],
             })
-    print(f"Данные сохранены в файл: {filepath}")
+    logger.warn(f"Данные сохранены в файл: {filepath}")

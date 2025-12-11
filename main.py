@@ -51,17 +51,17 @@ def ensure_driver(driver, headless=False):
 def run():
     site_names = [
         "sensor-com.ru",
-        "teko-com.ru",
         "mega-k.com",
         "beskonta.ru",
         "balluff-rus.ru",
-        "sensoren.ru"
+        "sensoren.ru",
+        # "teko-com.ru",
     ]
 
     for site in site_names:
         driver = None
         try:
-            driver = get_driver(headless=False)
+            driver = get_driver(headless=True)
 
             logger.warn(f"started parse {site}")
             parser = get_parser(site, driver)

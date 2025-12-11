@@ -10,6 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 from parsers.base_parser import BaseParser
+from utils import logger
 
 
 def sanitize_filename(filename: str) -> str:
@@ -81,7 +82,7 @@ class BalluffParser(BaseParser):
 
             return True
         except Exception as exception:
-            print(exception)
+            logger.error(str(exception))
             return False
 
     def collect_product_data(self):
@@ -109,9 +110,9 @@ class BalluffParser(BaseParser):
                     })
 
                 except Exception as e:
-                    print(f"Ошибка при обработке товара: {e}")
+                    logger.error(str(e))
         except Exception as e:
-            print(f"Ошибка при загрузке товаров: {e}")
+            logger.error(str(e))
 
     def parse(self):
         catalog_links = [
@@ -128,7 +129,7 @@ class BalluffParser(BaseParser):
         for catalog_link in catalog_links:
             self.driver.get(self.get_url(catalog_link))
             time.sleep(3)
-            print(f"начал парсинг по ссылке {catalog_link}")
+            logger.warn(f"начал парсинг по ссылке {catalog_link}")
 
             title = self.driver.find_element(By.ID, "pagetitle").text.strip()
 
