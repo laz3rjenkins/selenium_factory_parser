@@ -58,7 +58,7 @@ def run():
     for site in site_names:
         driver = None
         try:
-            driver = get_driver(headless=False)
+            driver = get_driver(headless=True)
 
             logger.warn(f"started parse {site}")
             parser = get_parser(site, driver)
