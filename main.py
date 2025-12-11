@@ -12,19 +12,21 @@ from utils import logger
 
 def get_driver(headless: bool = False) -> webdriver.Chrome:
     options = Options()
-    unique_profile = f"/tmp/chrome_profile_{os.getpid()}"
-    options.add_argument(f"--user-data-dir={unique_profile}")
 
     if headless:
         options.add_argument("--headless=new")
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
+
     options.add_argument("--start-maximized")
     options.add_argument("--disable-extensions")
     options.add_argument("--enable-automation")
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager().install()),
+        options=options
+    )
 
     return driver
 
