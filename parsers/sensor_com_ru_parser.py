@@ -26,11 +26,11 @@ class SensorComRuParser(BaseParser):
     def show_maximum_products_count(self):
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "/html/body/section[3]/div/div[2]/div[2]/div[2]/div[1]"))
+                EC.element_to_be_clickable((By.XPATH, "/html/body/section[3]/div/div[2]/div[2]/div[2]/div[1]"))
             )
 
             self.driver.execute_script(
-                '$(".nativejs-select__placeholder")[1].click();$(".nativejs-select__option")[5].click();')
+                '$(".nativejs-select__placeholder")[1].click();$(".nativejs-select__option")[7].click();')
             time.sleep(.5)
         except Exception as e:
             logger.error("show_maximum_products_count error " + str(e))
