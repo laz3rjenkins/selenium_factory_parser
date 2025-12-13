@@ -16,6 +16,35 @@ from selenium.common.exceptions import (
 )
 
 
+def parse_product_info(characteristics: str) -> dict:
+    needed_keys = {
+        "Размер прямоугольного корпуса, мм",
+        "Диаметр резьбового корпуса",
+        "Расстояние срабатывания, мм",
+        "Функция переключения",
+        "Монтажное исполнение",
+        "Минимальная рабочая температура, °С",
+        "Максимальная рабочая температура, °С",
+        "Длина кабеля, м",
+        "Материал корпуса",
+        "Напряжение питания, В",
+        "Структура выхода",
+        "Способ подключения",
+    }
+
+    parts = characteristics.split("%;%")
+    temp_dict = {}
+
+    for i in range(0, len(parts) - 1, 2):
+        key = parts[i].strip()
+        value = parts[i + 1].strip()
+        temp_dict[key] = value
+
+    parsed = {key: temp_dict.get(key, "") for key in needed_keys}
+
+    return parsed
+
+
 class TekoParserNew(BaseParser):
     def __init__(self, driver: webdriver.Chrome):
         super().__init__(driver)
@@ -27,34 +56,6 @@ class TekoParserNew(BaseParser):
 
     def open_next_page(self, link: str):
         self.driver.get(f"{link}?PAGEN_3={self.current_page}")
-
-    def parse_product_info(self, characteristics: str) -> dict:
-        needed_keys = {
-            "Размер прямоугольного корпуса, мм",
-            "Диаметр резьбового корпуса",
-            "Расстояние срабатывания, мм",
-            "Функция переключения",
-            "Монтажное исполнение",
-            "Минимальная рабочая температура, °С",
-            "Максимальная рабочая температура, °С",
-            "Длина кабеля, м",
-            "Материал корпуса",
-            "Напряжение питания, В",
-            "Структура выхода",
-            "Способ подключения",
-        }
-
-        parts = characteristics.split("%;%")
-        temp_dict = {}
-
-        for i in range(0, len(parts) - 1, 2):
-            key = parts[i].strip()
-            value = parts[i + 1].strip()
-            temp_dict[key] = value
-
-        parsed = {key: temp_dict.get(key, "") for key in needed_keys}
-
-        return parsed
 
     def get_data_from_page(self):
         WebDriverWait(self.driver, 10).until(
@@ -104,7 +105,7 @@ class TekoParserNew(BaseParser):
 
                 info += f"{divider}{prop_name}%;%{prop_value}"
 
-            product_info_dict = self.parse_product_info(info)
+            product_info_dict = parse_product_info(info)
 
             self.products.append({
                 "name": product_name,

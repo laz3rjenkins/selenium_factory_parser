@@ -49,6 +49,7 @@ def ensure_driver(driver, headless=False):
 
 
 def run():
+    # todo в .env вынести названия сайтов и выбор хедлесса
     site_names = [
         "sensor-com.ru",
         "mega-k.com",

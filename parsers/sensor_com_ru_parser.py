@@ -13,6 +13,32 @@ import time
 from parsers.base_parser import BaseParser
 from utils import logger
 
+def parse_product_info(characteristics: str) -> dict:
+    needed_keys = {
+        "Размер корпуса",
+        "Расстояние срабатывания Sn, мм",
+        "Функция выхода",
+        "Монтажное исполнение",
+        "Температура окружающей среды",
+        "Длина кабеля, м",
+        "Материал корпуса",
+        "Рабочее напряжение, В",
+        "Схема выхода",
+        "Вид подключения",
+    }
+
+    parts = characteristics.split("%;%")
+    temp_dict = {}
+
+    for i in range(0, len(parts) - 1, 2):
+        key = parts[i].strip()
+        value = parts[i + 1].strip()
+        temp_dict[key] = value
+
+    parsed = {key: temp_dict.get(key, "") for key in needed_keys}
+
+    return parsed
+
 
 class SensorComRuParser(BaseParser):
     def __init__(self, driver: webdriver.Chrome):
@@ -26,7 +52,7 @@ class SensorComRuParser(BaseParser):
     def show_maximum_products_count(self):
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "/html/body/section[3]/div/div[2]/div[2]/div[2]/div[1]"))
+                EC.element_to_be_clickable((By.XPATH, "/html/body/section[2]/div/div[2]/div[2]/div[2]/div[1]/button"))
             )
 
             self.driver.execute_script(
@@ -64,6 +90,10 @@ class SensorComRuParser(BaseParser):
 
                         product_information_text = product.find_element(By.CLASS_NAME,
                                                                         'product-box__intro').text.strip()
+                        product_information_text = product_information_text.replace(": ", "%;%").replace("\n", "%;%").strip()
+
+                        product_info_dict = parse_product_info(product_information_text)
+
                         try:
                             product_box_available_div = product.find_element(By.CLASS_NAME,
                                                                              'product-box__available')
@@ -83,6 +113,7 @@ class SensorComRuParser(BaseParser):
                         'info': product_information_text,
                         'is_available': is_product_available,
                         'price': product_price,
+                        **product_info_dict
                     })
 
                 except Exception as e:
@@ -132,19 +163,22 @@ class SensorComRuParser(BaseParser):
         filename = os.path.join("files", "sensor_com", f"sensor_com_data_{sanitize_filename(filename)}.csv")
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
+        if not self.products:
+            logger.warn("Нет данных для сохранения")
+            return
+
+        fieldnames = list(self.products[0].keys())
+
         with open(filename, mode="w", encoding="utf-8-sig", newline="") as file:
             writer = csv.DictWriter(file,
-                                    fieldnames=["name", "price", "info", "link", "is_available"],
+                                    fieldnames=fieldnames,
                                     delimiter=";")
             writer.writeheader()
             for product in self.products:
-                writer.writerow({
-                    "name": product["name"],
-                    "price": product["price"],
-                    "info": product["info"].replace('\n', '; '),
-                    "link": product["link"],
-                    "is_available": product["is_available"],
-                })
+                row = {key: product.get(key, "") for key in fieldnames}
+                if "info" in row:
+                    row["info"] = row["info"].replace("\n", "; ")
+                writer.writerow(row)
 
     def go_to_the_next_page(self):
         pagination_input = self.driver.find_element(By.CLASS_NAME, "pagination-block__pagination-input")
