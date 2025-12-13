@@ -123,10 +123,10 @@ class SensorComRuParser(BaseParser):
 
     def parse(self):
         catalog_links = [
-            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/ultrazvukovyie/", # 1
-            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/emkostnyie-2/", # 8
-            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/opticheskie/", # 10
-            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/induktivnyie/", # 123
+            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/ultrazvukovyie/",  # 1
+            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/emkostnyie-2/",  # 8
+            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/opticheskie/",  # 10
+            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/induktivnyie/",  # 123
         ]
         self.driver.delete_all_cookies()
 
