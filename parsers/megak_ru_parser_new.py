@@ -26,6 +26,32 @@ def sanitize_filename(filename: str) -> str:
 
     return sanitized
 
+def parse_product_info(characteristics: str) -> dict:
+    needed_keys = {
+        "Размеры упаковки",
+        "Расстояние срабатывания номинальное (Sn)",
+        "Функция выхода",
+        "Способ монтажа",
+        "Рабочая температура",
+        "Длина кабеля",
+        "Материал корпуса",
+        "Напряжение питания рабочее",
+        "Тип выхода",
+        "Способ подключения",
+    }
+
+    parts = characteristics.split("%;%")
+    temp_dict = {}
+
+    for i in range(0, len(parts) - 1, 2):
+        key = parts[i].strip()
+        value = parts[i + 1].strip()
+        temp_dict[key] = value
+
+    parsed = {key: temp_dict.get(key, "") for key in needed_keys}
+
+    return parsed
+
 
 class MegakRuNewParser(BaseParser):
     def __init__(self, driver: webdriver.Chrome):
@@ -116,7 +142,10 @@ class MegakRuNewParser(BaseParser):
                     specs = self.driver.find_elements(By.CLASS_NAME, "properties-item")
                     specs_with_separator = ""
                     for spec in specs:
-                        specs_with_separator += spec.text.strip() + ";"
+                        specs_with_separator += spec.text.strip() + "%;%"
+
+                    specs_with_separator = specs_with_separator.strip().replace("\n", "%;%")
+                    product_info_dict = parse_product_info(specs_with_separator)
 
                     product_price = self.driver.find_element(By.CLASS_NAME, "price").text.strip()
 
@@ -126,6 +155,7 @@ class MegakRuNewParser(BaseParser):
                         "description": description,
                         "info": specs_with_separator,
                         "link": link,
+                        **product_info_dict
                     })
 
                 except Exception as e:
@@ -203,17 +233,21 @@ def save_to_csv(data, filename):
     filepath = os.path.join("files", "megak_ru_new", filename)
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
+    if not data:
+        logger.warn("Нет данных для сохранения")
+        return
+
+    fieldnames = list(data[0].keys())
+
     with open(filepath, mode="w", encoding="utf-8-sig", newline="") as file:
         writer = csv.DictWriter(file,
-                                fieldnames=['name', 'price', 'description', 'info', 'link'],
+                                fieldnames=fieldnames,
                                 delimiter=";")
         writer.writeheader()
         for item in data:
-            writer.writerow({
-                "name": item['name'],
-                "price": item['price'],
-                "description": item['description'],
-                "info": item['info'].replace('\n', '; '),
-                "link": item['link'],
-            })
+            row = {key: item.get(key, "") for key in fieldnames}
+            if "info" in row:
+                row["info"] = row["info"].replace("\n", "; ")
+            writer.writerow(row)
+
     logger.warn(f"Данные сохранены в файл: {filepath}")
