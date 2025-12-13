@@ -1,0 +1,118 @@
+WARNING (12-12-2025 11:22:33): started parse teko-com.ru
+
+WARNING (12-12-2025 12:27:05): started parse teko-com.ru
+
+WARNING (12-12-2025 12:27:41): started parse teko-com.ru
+
+WARNING (12-12-2025 12:27:47): столько страниц на сайте ща 1
+
+WARNING (12-12-2025 12:31:02): started parse teko-com.ru
+
+WARNING (12-12-2025 12:31:09): столько страниц на сайте ща 1
+
+WARNING (12-12-2025 12:32:09): started parse teko-com.ru
+
+WARNING (12-12-2025 12:32:14): столько страниц на сайте ща 1
+
+WARNING (12-12-2025 12:35:12): started parse teko-com.ru
+
+WARNING (12-12-2025 12:35:16): столько страниц на сайте ща 440
+
+WARNING (12-12-2025 12:43:52): started parse teko-com.ru
+
+WARNING (12-12-2025 12:43:56): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 12:43:56): по ссылке 440 страниц
+
+WARNING (12-12-2025 12:44:13): started parse teko-com.ru
+
+WARNING (12-12-2025 12:44:18): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 12:44:18): по ссылке 440 страниц
+
+WARNING (12-12-2025 12:47:27): started parse teko-com.ru
+
+WARNING (12-12-2025 12:47:31): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 12:47:31): по ссылке 440 страниц
+
+WARNING (12-12-2025 12:49:33): started parse teko-com.ru
+
+WARNING (12-12-2025 12:49:36): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 12:49:36): по ссылке 440 страниц
+
+WARNING (12-12-2025 12:50:20): started parse teko-com.ru
+
+WARNING (12-12-2025 12:50:46): started parse teko-com.ru
+
+WARNING (12-12-2025 12:50:52): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 12:50:52): по ссылке 147 страниц
+
+WARNING (12-12-2025 12:51:09): started parse teko-com.ru
+
+WARNING (12-12-2025 12:52:00): started parse teko-com.ru
+
+WARNING (12-12-2025 12:52:13): started parse teko-com.ru
+
+WARNING (12-12-2025 12:52:49): started parse teko-com.ru
+
+WARNING (12-12-2025 12:52:57): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 12:52:57): по ссылке 147 страниц
+
+WARNING (12-12-2025 14:58:48): started parse teko-com.ru
+
+WARNING (12-12-2025 14:59:24): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 14:59:24): по ссылке 147 страниц
+
+WARNING (12-12-2025 15:02:50): started parse teko-com.ru
+
+WARNING (12-12-2025 15:03:04): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 15:03:04): по ссылке 147 страниц
+
+WARNING (12-12-2025 15:23:04): started parse teko-com.ru
+
+WARNING (12-12-2025 15:23:32): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 15:23:32): по ссылке 147 страниц
+
+WARNING (12-12-2025 17:19:52): started parse teko-com.ru
+
+WARNING (12-12-2025 17:20:21): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 17:20:21): по ссылке 147 страниц
+
+WARNING (12-12-2025 17:22:08): started parse teko-com.ru
+
+WARNING (12-12-2025 17:22:20): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (12-12-2025 17:22:20): по ссылке 147 страниц
+
+WARNING (13-12-2025 14:25:39): started parse teko-com.ru
+
+WARNING (13-12-2025 14:26:25): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (13-12-2025 14:26:25): по ссылке 147 страниц
+
+WARNING (13-12-2025 14:37:54): started parse teko-com.ru
+
+WARNING (13-12-2025 14:38:03): Начал парсинг https://teko-com.ru/catalog/induktivnye-datchiki/
+
+WARNING (13-12-2025 14:38:03): по ссылке 147 страниц
+
+WARNING (13-12-2025 14:38:12): Начал парсинг https://teko-com.ru/catalog/emkostnye-datchiki/
+
+WARNING (13-12-2025 14:38:12): по ссылке 24 страниц
+
+WARNING (13-12-2025 14:38:23): Начал парсинг https://teko-com.ru/catalog/opticheskie-datchiki/
+
+WARNING (13-12-2025 14:38:23): по ссылке 39 страниц
+
+WARNING (13-12-2025 14:38:32): Начал парсинг https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-polozheniya/
+
+WARNING (13-12-2025 14:38:32): по ссылке 3 страниц
+

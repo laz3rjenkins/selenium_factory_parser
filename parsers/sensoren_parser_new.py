@@ -112,7 +112,7 @@ class SensorenNewParser(BaseParser):
                 try:
                     product_info_dict = {}
                     self.driver.get(link)
-                    time.sleep(3)
+                    time.sleep(1)
 
                     product_title_element = self.driver.find_element(By.CLASS_NAME, "product-info-name")
                     product_name = product_title_element.text.strip()
@@ -199,7 +199,7 @@ class SensorenNewParser(BaseParser):
             title = ""
             while True:
                 self.driver.get(self.get_url(catalog_link))
-                time.sleep(3)
+                time.sleep(1)
 
                 print(f"current page {self.current_page}, catalog: {catalog_link}")
                 if self.current_page == 1:
