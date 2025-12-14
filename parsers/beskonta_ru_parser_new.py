@@ -16,6 +16,33 @@ from utils import logger
 def get_url(page=1, page_size=45, view_as="list"):
     return f"https://beskonta.ru/catalog/all/?pageSize={page_size}&viewAs={view_as}&p={page}"
 
+def parse_product_info(characteristics: str) -> dict:
+    needed_keys = {
+        "Типоразмер",
+        "Номинальное расстояние срабатывания [Sn]",
+        "Тип коммутации",
+        "Способ установки в металл",
+        "Диапазон рабочих температур",
+        "Климатическое исполнение",
+        "Длина кабеля",
+        "Материал корпуса",
+        "Диапазон питающего напряжения",
+        "Тип коммутации | Схема подключения",
+        "Электрическое подключение",
+    }
+
+    parts = characteristics.split("%;%")
+    temp_dict = {}
+
+    for i in range(0, len(parts) - 1, 2):
+        key = parts[i].strip()
+        value = parts[i + 1].strip()
+        temp_dict[key] = value
+
+    parsed = {key: temp_dict.get(key, "") for key in needed_keys}
+
+    return parsed
+
 
 class BeskontaRuNewParser(BaseParser):
     def __init__(self, driver: webdriver.Chrome):
@@ -89,12 +116,14 @@ class BeskontaRuNewParser(BaseParser):
                                     continue
                                 if spec.text.strip().replace("\n", "") == "":
                                     continue
-                                specs_with_separator += spec.text.strip().replace("\n", ";") + ";"
+                                specs_with_separator += spec.text.strip().replace("\n", "%;%") + "%;%"
 
                             index += 1
 
                     except Exception as price_exc:
                         logger.error(str(price_exc))
+
+                    product_info_dict = parse_product_info(specs_with_separator)
 
                     product_price = self.driver.find_element(By.CLASS_NAME, "p-p-price").text.strip()
                     self.products.append({
@@ -102,6 +131,7 @@ class BeskontaRuNewParser(BaseParser):
                         'name': product_name,
                         'info': specs_with_separator,
                         'price': product_price,
+                        **product_info_dict,
                     })
 
                     print({
@@ -124,18 +154,22 @@ class BeskontaRuNewParser(BaseParser):
         filename = os.path.join("files", "beskonta_ru_new", "beskonta_data.csv")
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
+        if not self.products:
+            logger.warn("Нет данных для сохранения")
+            return
+
+        fieldnames = list(self.products[0].keys())
+
         with open(filename, mode="w", encoding="utf-8-sig", newline="") as file:
             writer = csv.DictWriter(file,
-                                    fieldnames=["name", "price", "info", "link"],
+                                    fieldnames=fieldnames,
                                     delimiter=";")
             writer.writeheader()
             for product in self.products:
-                writer.writerow({
-                    "name": product["name"],
-                    "price": product["price"],
-                    "info": product["info"].replace('\n', '; '),
-                    "link": product["link"],
-                })
+                row = {key: product.get(key, "") for key in fieldnames}
+                if "info" in row:
+                    row["info"] = row["info"].replace("\n", "; ")
+                writer.writerow(row)
 
     def parse(self):
         self.driver.delete_all_cookies()
