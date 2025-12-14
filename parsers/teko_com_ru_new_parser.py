@@ -10,10 +10,6 @@ import os
 
 from utils import logger
 from parsers.base_parser import BaseParser
-from selenium.common.exceptions import (
-    TimeoutException,
-    ElementClickInterceptedException,
-)
 
 
 def parse_product_info(characteristics: str) -> dict:
@@ -69,12 +65,11 @@ class TekoParserNew(BaseParser):
                 product_links.append(product_link.get_attribute("href").strip())
             except selenium.common.exceptions.NoSuchElementException:
                 continue
-
+        logger.warn(f"на странице обнаружено {len(product_links)} товаров")
         for link in product_links:
             self.driver.get(link)
             time.sleep(.5)
             self.collect_product_data()
-            break
 
     def collect_product_data(self):
         """Сбор данных о товарах на текущей странице."""
@@ -131,6 +126,7 @@ class TekoParserNew(BaseParser):
             return
 
         fieldnames = list(self.products[0].keys())
+        logger.warn(f"{page_title} has {len(self.products)} items")
 
         with open(filename, mode="w", encoding="utf-8-sig", newline="") as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames, delimiter=";")
@@ -156,71 +152,45 @@ class TekoParserNew(BaseParser):
         except Exception as e:
             return 1
 
-    def set_maximum_products_on_grid(self):
-        try:
-            wait = WebDriverWait(self.driver, 3)
-
-            select = wait.until(
-                EC.element_to_be_clickable(
-                    (By.CSS_SELECTOR, "div[data-type='PAGE_ELEMENT_COUNT']")
-                )
-            )
-            select.click()
-
-            option = wait.until(
-                EC.element_to_be_clickable(
-                    (By.CSS_SELECTOR, "div[data-type='PAGE_ELEMENT_COUNT'] .option:last-child")
-                )
-            )
-            option.click()
-
-        except (TimeoutException, ElementClickInterceptedException):
-            pass
-        # select = self.driver.find_element(By.CSS_SELECTOR, "div[data-type='PAGE_ELEMENT_COUNT']")
-        # time.sleep(.2)
-        # select.click()
-        # time.sleep(.2)
-        # select.find_elements(By.CLASS_NAME, "option")[-1].click()
-
     def parse(self):
         """Основной метод парсинга."""
         self.driver.delete_all_cookies()
-        catalog = [{'link': 'https://teko-com.ru/catalog/induktivnye-datchiki/', 'name': 'Индуктивные датчики'},
-                   {'link': 'https://teko-com.ru/catalog/emkostnye-datchiki/', 'name': 'Емкостные датчики'},
-                   {'link': 'https://teko-com.ru/catalog/opticheskie-datchiki/', 'name': 'Оптические датчики'},
-                   {'link': 'https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-polozheniya/',
-                    'name': 'Магниточувствительные датчики положения'},
-                   {'link': 'https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-skorosti/',
-                    'name': 'Магниточувствительные датчики скорости'},
-                   {'link': 'https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-urovnya/',
-                    'name': 'Магниточувствительные датчики уровня'},
-                   {'link': 'https://teko-com.ru/catalog/ultrazvukovye-datchiki/', 'name': 'Ультразвуковые датчики'},
-                   {'link': 'https://teko-com.ru/catalog/datchiki-davleniya/', 'name': 'Датчики давления'},
-                   {'link': 'https://teko-com.ru/catalog/datchik-vlazhnosti-i-temperatury-vozdukha/',
-                    'name': 'Датчики влажности и температуры воздуха'},
-                   {'link': 'https://teko-com.ru/catalog/datchiki-temperatury/', 'name': 'Датчики температуры'},
-                   {'link': 'https://teko-com.ru/catalog/datchik-diferentsialnogo-davleniya-vozdukha/',
-                    'name': 'Датчики дифференциального давления воздуха'},
-                   {'link': 'https://teko-com.ru/catalog/datchiki-uglekislogo-gaza/',
-                    'name': 'Датчики углекислого газа'},
-                   {'link': 'https://teko-com.ru/catalog/emkostno-chastotnye-datchiki/',
-                    'name': 'Емкостно-частотные датчики'},
-                   {'link': 'https://teko-com.ru/catalog/inklinometry/', 'name': 'Инклинометры'},
-                   {'link': 'https://teko-com.ru/catalog/lazernye-datchiki-rasstoyaniya/',
-                    'name': 'Лазерные датчики расстояния'},
-                   {'link': 'https://teko-com.ru/catalog/radarnye-datchiki-dvizheniya/',
-                    'name': 'Радарные датчики движения'},
-                   {'link': 'https://teko-com.ru/catalog/rotatsionnye-datchiki/', 'name': 'Ротационные датчики'},
-                   {'link': 'https://teko-com.ru/catalog/vibratsionnyy-datchiki/', 'name': 'Вибрационные датчики'},
-                   {'link': 'https://teko-com.ru/catalog/enkodery/', 'name': 'Энкодеры'},
-                   {'link': 'https://teko-com.ru/catalog/kontsevye-vyklyuchateli/', 'name': 'Концевые выключатели'},]
+        catalog = [
+            {'link': 'https://teko-com.ru/catalog/emkostnye-datchiki/', 'name': 'Емкостные датчики'},
+            {'link': 'https://teko-com.ru/catalog/opticheskie-datchiki/', 'name': 'Оптические датчики'},
+            {'link': 'https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-polozheniya/',
+             'name': 'Магниточувствительные датчики положения'},
+            {'link': 'https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-urovnya/',
+             'name': 'Магниточувствительные датчики уровня'},
+            {'link': 'https://teko-com.ru/catalog/ultrazvukovye-datchiki/', 'name': 'Ультразвуковые датчики'},
+            {'link': 'https://teko-com.ru/catalog/datchiki-davleniya/', 'name': 'Датчики давления'},
+            {'link': 'https://teko-com.ru/catalog/datchik-vlazhnosti-i-temperatury-vozdukha/',
+             'name': 'Датчики влажности и температуры воздуха'},
+            {'link': 'https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-skorosti/',
+             'name': 'Магниточувствительные датчики скорости'},
+            {'link': 'https://teko-com.ru/catalog/datchik-diferentsialnogo-davleniya-vozdukha/',
+             'name': 'Датчики дифференциального давления воздуха'},
+            {'link': 'https://teko-com.ru/catalog/datchiki-uglekislogo-gaza/',
+             'name': 'Датчики углекислого газа'},
+            {'link': 'https://teko-com.ru/catalog/emkostno-chastotnye-datchiki/',
+             'name': 'Емкостно-частотные датчики'},
+            {'link': 'https://teko-com.ru/catalog/inklinometry/', 'name': 'Инклинометры'},
+            {'link': 'https://teko-com.ru/catalog/lazernye-datchiki-rasstoyaniya/',
+             'name': 'Лазерные датчики расстояния'},
+            # {'link': 'https://teko-com.ru/catalog/radarnye-datchiki-dvizheniya/',
+            #  'name': 'Радарные датчики движения'}, тут 0 товаров, не забыть обработать
+            {'link': 'https://teko-com.ru/catalog/rotatsionnye-datchiki/', 'name': 'Ротационные датчики'},
+            {'link': 'https://teko-com.ru/catalog/vibratsionnyy-datchiki/', 'name': 'Вибрационные датчики'},
+            {'link': 'https://teko-com.ru/catalog/enkodery/', 'name': 'Энкодеры'},
+            {'link': 'https://teko-com.ru/catalog/kontsevye-vyklyuchateli/', 'name': 'Концевые выключатели'},
+            {'link': 'https://teko-com.ru/catalog/datchiki-temperatury/', 'name': 'Датчики температуры'},
+            {'link': 'https://teko-com.ru/catalog/induktivnye-datchiki/', 'name': 'Индуктивные датчики'},
+        ]
 
         for link in catalog:
             self.driver.get(link['link'])
-            self.driver.execute_script("window.scrollBy(0, 750);")
+            self.driver.execute_script("window.scrollBy(0, 800);")
             time.sleep(.5)
-            self.set_maximum_products_on_grid()
-            time.sleep(2)
             WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located((By.CLASS_NAME, "conteinet_full_items"))
             )
@@ -228,19 +198,32 @@ class TekoParserNew(BaseParser):
             self.max_page_count = self.get_max_page_count()
             self.products = []
             self.current_page = 1
-
+            self.driver.delete_cookie("PHPSESSID")
+            self.driver.delete_all_cookies()
             logger.warn(f"Начал парсинг {link['link']}")
             logger.warn(f"по ссылке {self.max_page_count} страниц")
 
             while True:
-                time.sleep(1)
+                try:
+                    time.sleep(1)
 
-                if self.current_page > self.max_page_count:
-                    break
+                    if self.current_page > self.max_page_count:
+                        break
 
-                self.get_data_from_page()
-                self.current_page += 1
-                self.open_next_page(link['link'])
+                    # чистим куки каждые 25 страниц
+                    if self.current_page % 25 == 0:
+                        logger.warn(f"удалил все куки на странице {self.current_page}")
+                        self.driver.delete_cookie("PHPSESSID")
+                        self.driver.delete_all_cookies()
+
+                    self.get_data_from_page()
+                    self.current_page += 1
+                    self.open_next_page(link['link'])
+                except Exception as e:
+                    self.driver.delete_cookie("PHPSESSID")
+                    self.driver.delete_all_cookies()
+                    self.current_page += 1
+                    logger.error(str(e))
 
             link['name'] = link['name'].lower().replace(" ", "_")
             self.save_to_csv(link['name'])
