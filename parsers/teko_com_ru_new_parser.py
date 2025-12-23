@@ -55,7 +55,7 @@ class TekoParserNew(BaseParser):
 
     def get_data_from_page(self):
         WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "conteinet_full_items"))
+            EC.presence_of_element_located((By.CLASS_NAME, "products-list_pk"))
         )
         products = self.driver.find_elements(By.CLASS_NAME, "product-item-container")
         product_links = []
@@ -193,7 +193,7 @@ class TekoParserNew(BaseParser):
             self.driver.execute_script("window.scrollBy(0, 800);")
             time.sleep(.5)
             WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, "conteinet_full_items"))
+                EC.visibility_of_element_located((By.CLASS_NAME, "products-list_pk"))
             )
 
             self.max_page_count = self.get_max_page_count()
