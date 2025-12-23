@@ -13,6 +13,18 @@ import time
 from parsers.base_parser import BaseParser
 from utils import logger
 
+NEEDED_KEYS = [
+    "Размеры упаковки",
+    "Расстояние срабатывания номинальное (Sn)",
+    "Функция выхода",
+    "Способ монтажа",
+    "Рабочая температура",
+    "Длина кабеля",
+    "Материал корпуса",
+    "Напряжение питания рабочее",
+    "Тип выхода",
+    "Способ подключения",
+]
 
 def sanitize_filename(filename: str) -> str:
     '''
@@ -27,19 +39,6 @@ def sanitize_filename(filename: str) -> str:
     return sanitized
 
 def parse_product_info(characteristics: str) -> dict:
-    needed_keys = {
-        "Размеры упаковки",
-        "Расстояние срабатывания номинальное (Sn)",
-        "Функция выхода",
-        "Способ монтажа",
-        "Рабочая температура",
-        "Длина кабеля",
-        "Материал корпуса",
-        "Напряжение питания рабочее",
-        "Тип выхода",
-        "Способ подключения",
-    }
-
     parts = characteristics.split("%;%")
     temp_dict = {}
 
@@ -48,10 +47,9 @@ def parse_product_info(characteristics: str) -> dict:
         value = parts[i + 1].strip()
         temp_dict[key] = value
 
-    parsed = {key: temp_dict.get(key, "") for key in needed_keys}
+    parsed = {key: temp_dict.get(key, "") for key in NEEDED_KEYS}
 
     return parsed
-
 
 class MegakRuNewParser(BaseParser):
     def __init__(self, driver: webdriver.Chrome):

@@ -26,7 +26,7 @@ NEEDED_KEYS = [
     "Способ подключения",
 ]
 
-
+#todo: вынести метод в utils
 def parse_product_info(characteristics: str) -> dict:
     parts = characteristics.split("%;%")
     temp_dict = {}
