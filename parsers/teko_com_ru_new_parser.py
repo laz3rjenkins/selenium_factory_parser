@@ -11,23 +11,23 @@ import os
 from utils import logger
 from parsers.base_parser import BaseParser
 
+NEEDED_KEYS = [
+    "Размер прямоугольного корпуса, мм",
+    "Диаметр резьбового корпуса",
+    "Расстояние срабатывания, мм",
+    "Функция переключения",
+    "Монтажное исполнение",
+    "Минимальная рабочая температура, °С",
+    "Максимальная рабочая температура, °С",
+    "Длина кабеля, м",
+    "Материал корпуса",
+    "Напряжение питания, В",
+    "Структура выхода",
+    "Способ подключения",
+]
+
 
 def parse_product_info(characteristics: str) -> dict:
-    needed_keys = {
-        "Размер прямоугольного корпуса, мм",
-        "Диаметр резьбового корпуса",
-        "Расстояние срабатывания, мм",
-        "Функция переключения",
-        "Монтажное исполнение",
-        "Минимальная рабочая температура, °С",
-        "Максимальная рабочая температура, °С",
-        "Длина кабеля, м",
-        "Материал корпуса",
-        "Напряжение питания, В",
-        "Структура выхода",
-        "Способ подключения",
-    }
-
     parts = characteristics.split("%;%")
     temp_dict = {}
 
@@ -36,10 +36,7 @@ def parse_product_info(characteristics: str) -> dict:
         value = parts[i + 1].strip()
         temp_dict[key] = value
 
-    parsed = {key: temp_dict.get(key, "") for key in needed_keys}
-
-    return parsed
-
+    return {key: temp_dict.get(key, "") for key in NEEDED_KEYS}
 
 class TekoParserNew(BaseParser):
     def __init__(self, driver: webdriver.Chrome):
