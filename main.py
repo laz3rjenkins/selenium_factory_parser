@@ -56,7 +56,7 @@ def run():
         "beskonta.ru",
         "balluff-rus.ru",
         "sensoren.ru",
-        # "teko-com.ru",
+        "teko-com.ru",
     ]
 
     for site in site_names:

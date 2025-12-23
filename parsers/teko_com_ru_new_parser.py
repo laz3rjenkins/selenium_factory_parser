@@ -77,6 +77,7 @@ class TekoParserNew(BaseParser):
             product_link = self.driver.current_url
             product_name = self.driver.find_element(By.CLASS_NAME, "catalog-detail-name").text.strip()
             product_model = self.driver.find_element(By.CLASS_NAME, "catalog-detail-model").text.strip()
+            product_name += " " + product_model
             try:
                 price_block = self.driver.find_element(By.CLASS_NAME, "catalog-detail-price")
                 price_div = price_block.find_element(By.TAG_NAME, "div")
@@ -104,10 +105,10 @@ class TekoParserNew(BaseParser):
 
             self.products.append({
                 "name": product_name,
-                "model": product_model,
+                # "model": product_model,
                 "price": product_price,
                 "availability": availability,
-                "info": info,
+                # "info": info,
                 "link": product_link,
                 **product_info_dict,
             })
@@ -163,7 +164,6 @@ class TekoParserNew(BaseParser):
             {'link': 'https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-urovnya/',
              'name': 'Магниточувствительные датчики уровня'},
             {'link': 'https://teko-com.ru/catalog/ultrazvukovye-datchiki/', 'name': 'Ультразвуковые датчики'},
-            {'link': 'https://teko-com.ru/catalog/datchiki-davleniya/', 'name': 'Датчики давления'},
             {'link': 'https://teko-com.ru/catalog/datchik-vlazhnosti-i-temperatury-vozdukha/',
              'name': 'Датчики влажности и температуры воздуха'},
             {'link': 'https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-skorosti/',
@@ -184,6 +184,7 @@ class TekoParserNew(BaseParser):
             {'link': 'https://teko-com.ru/catalog/enkodery/', 'name': 'Энкодеры'},
             {'link': 'https://teko-com.ru/catalog/kontsevye-vyklyuchateli/', 'name': 'Концевые выключатели'},
             {'link': 'https://teko-com.ru/catalog/datchiki-temperatury/', 'name': 'Датчики температуры'},
+            {'link': 'https://teko-com.ru/catalog/datchiki-davleniya/', 'name': 'Датчики давления'},
             {'link': 'https://teko-com.ru/catalog/induktivnye-datchiki/', 'name': 'Индуктивные датчики'},
         ]
 
