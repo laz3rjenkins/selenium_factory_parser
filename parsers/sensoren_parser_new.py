@@ -140,7 +140,7 @@ class SensorenNewParser(BaseParser):
                     self.products.append({
                         'name': product_name,
                         'link': product_link,
-                        'info': product_info,
+                        # 'info': product_info,
                         'price': product_price,
                         **product_info_dict,
                     })
@@ -148,7 +148,7 @@ class SensorenNewParser(BaseParser):
                     log = {
                         'name': product_name,
                         'link': product_link,
-                        'info': product_info,
+                        # 'info': product_info,
                         'price': product_price,
                         **product_info_dict,
                         'page': self.current_page

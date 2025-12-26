@@ -128,7 +128,7 @@ class BeskontaRuNewParser(BaseParser):
                     self.products.append({
                         'link': product_link,
                         'name': product_name,
-                        'info': specs_with_separator,
+                        # 'info': specs_with_separator,
                         'price': product_price,
                         **product_info_dict,
                     })
@@ -136,7 +136,7 @@ class BeskontaRuNewParser(BaseParser):
                     print({
                         'link': product_link,
                         'name': product_name,
-                        'info': specs_with_separator,
+                        # 'info': specs_with_separator,
                         'price': product_price,
                     })
 

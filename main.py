@@ -54,7 +54,7 @@ def run():
         "sensor-com.ru",
         "mega-k.com",
         "beskonta.ru",
-        "balluff-rus.ru",
+        # "balluff-rus.ru",
         "sensoren.ru",
         "teko-com.ru",
     ]

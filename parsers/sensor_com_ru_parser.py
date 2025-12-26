@@ -109,7 +109,7 @@ class SensorComRuParser(BaseParser):
                     self.products.append({
                         'name': product_name,
                         'link': product_link,
-                        'info': product_information_text,
+                        # 'info': product_information_text,
                         'is_available': is_product_available,
                         'price': product_price,
                         **product_info_dict

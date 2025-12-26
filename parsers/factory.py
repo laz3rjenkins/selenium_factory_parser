@@ -13,7 +13,7 @@ def get_parser(site_name: str, driver) -> BaseParser:
         "teko-com.ru": TekoParserNew,
         "mega-k.com": MegakRuNewParser,
         "beskonta.ru": BeskontaRuNewParser,
-        "balluff-rus.ru": BalluffParser,
+        # "balluff-rus.ru": BalluffParser,
         "sensoren.ru": SensorenNewParser,
     }
 

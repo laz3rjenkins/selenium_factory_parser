@@ -151,7 +151,7 @@ class MegakRuNewParser(BaseParser):
                         "name": product_name,
                         "price": product_price,
                         "description": description,
-                        "info": specs_with_separator,
+                        # "info": specs_with_separator,
                         "link": link,
                         **product_info_dict
                     })
