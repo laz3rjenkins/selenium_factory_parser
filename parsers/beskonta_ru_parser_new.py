@@ -12,25 +12,24 @@ import time
 from parsers.base_parser import BaseParser
 from utils import logger
 
+NEEDED_KEYS = [
+    "Типоразмер",
+    "Номинальное расстояние срабатывания [Sn]",
+    "Тип коммутации",
+    "Способ установки в металл",
+    "Диапазон рабочих температур",
+    "Климатическое исполнение",
+    "Длина кабеля",
+    "Материал корпуса",
+    "Диапазон питающего напряжения",
+    "Тип коммутации | Схема подключения",
+    "Электрическое подключение",
+]
 
 def get_url(page=1, page_size=45, view_as="list"):
     return f"https://beskonta.ru/catalog/all/?pageSize={page_size}&viewAs={view_as}&p={page}"
 
 def parse_product_info(characteristics: str) -> dict:
-    needed_keys = {
-        "Типоразмер",
-        "Номинальное расстояние срабатывания [Sn]",
-        "Тип коммутации",
-        "Способ установки в металл",
-        "Диапазон рабочих температур",
-        "Климатическое исполнение",
-        "Длина кабеля",
-        "Материал корпуса",
-        "Диапазон питающего напряжения",
-        "Тип коммутации | Схема подключения",
-        "Электрическое подключение",
-    }
-
     parts = characteristics.split("%;%")
     temp_dict = {}
 
@@ -39,7 +38,7 @@ def parse_product_info(characteristics: str) -> dict:
         value = parts[i + 1].strip()
         temp_dict[key] = value
 
-    parsed = {key: temp_dict.get(key, "") for key in needed_keys}
+    parsed = {key: temp_dict.get(key, "") for key in NEEDED_KEYS}
 
     return parsed
 
@@ -129,7 +128,7 @@ class BeskontaRuNewParser(BaseParser):
                     self.products.append({
                         'link': product_link,
                         'name': product_name,
-                        'info': specs_with_separator,
+                        # 'info': specs_with_separator,
                         'price': product_price,
                         **product_info_dict,
                     })
@@ -137,7 +136,7 @@ class BeskontaRuNewParser(BaseParser):
                     print({
                         'link': product_link,
                         'name': product_name,
-                        'info': specs_with_separator,
+                        # 'info': specs_with_separator,
                         'price': product_price,
                     })
 

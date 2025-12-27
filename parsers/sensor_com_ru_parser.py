@@ -13,20 +13,20 @@ import time
 from parsers.base_parser import BaseParser
 from utils import logger
 
-def parse_product_info(characteristics: str) -> dict:
-    needed_keys = {
-        "Размер корпуса",
-        "Расстояние срабатывания Sn, мм",
-        "Функция выхода",
-        "Монтажное исполнение",
-        "Температура окружающей среды",
-        "Длина кабеля, м",
-        "Материал корпуса",
-        "Рабочее напряжение, В",
-        "Схема выхода",
-        "Вид подключения",
-    }
+NEEDED_KEYS = [
+    "Размер корпуса",
+    "Расстояние срабатывания Sn, мм",
+    "Функция выхода",
+    "Монтажное исполнение",
+    "Температура окружающей среды",
+    "Длина кабеля, м",
+    "Материал корпуса",
+    "Рабочее напряжение, В",
+    "Схема выхода",
+    "Вид подключения",
+]
 
+def parse_product_info(characteristics: str) -> dict:
     parts = characteristics.split("%;%")
     temp_dict = {}
 
@@ -35,10 +35,9 @@ def parse_product_info(characteristics: str) -> dict:
         value = parts[i + 1].strip()
         temp_dict[key] = value
 
-    parsed = {key: temp_dict.get(key, "") for key in needed_keys}
+    parsed = {key: temp_dict.get(key, "") for key in NEEDED_KEYS}
 
     return parsed
-
 
 class SensorComRuParser(BaseParser):
     def __init__(self, driver: webdriver.Chrome):
@@ -110,7 +109,7 @@ class SensorComRuParser(BaseParser):
                     self.products.append({
                         'name': product_name,
                         'link': product_link,
-                        'info': product_information_text,
+                        # 'info': product_information_text,
                         'is_available': is_product_available,
                         'price': product_price,
                         **product_info_dict

@@ -13,6 +13,21 @@ import json
 from parsers.base_parser import BaseParser
 from utils import logger
 
+NEEDED_KEYS = [
+    "Размер резьбы корпуса:",
+    "Размер цилиндрического корпуса, мм:",
+    "Размер прямоугольного корпуса, мм:",
+    "Расстояние срабатывания, мм:",
+    "Функция переключения:",
+    "Монтаж:",
+    "Температура эксплуатации Min, °C:",
+    "Температура эксплуатации Max, °C:",
+    "Длина кабеля, м:",
+    "Материал корпуса:",
+    "Напряжение питания, В:",
+    "Тип выходного сигнала:",
+    "Соединение:",
+]
 
 def sanitize_filename(filename: str) -> str:
     '''
@@ -27,23 +42,6 @@ def sanitize_filename(filename: str) -> str:
     return sanitized
 
 def parse_product_info(characteristics: str) -> dict:
-    needed_keys = {
-        "Размер резьбы корпуса:",
-        "Размер цилиндрического корпуса, мм:",
-        "Размер прямоугольного корпуса, мм:",
-        "Расстояние срабатывания, мм:",
-        "Функция переключения:",
-        "Монтаж:",
-        "Температура эксплуатации Min, °C:",
-        "Температура эксплуатации Max, °C:",
-        "Длина кабеля, м:",
-        "Материал корпуса:",
-        "Напряжение питания, В:",
-        "Тип выходного сигнала:",
-        "Соединение:",
-    }
-
-    # превращаем строку в пары
     parts = characteristics.split(";")
     temp_dict = {}
 
@@ -52,12 +50,9 @@ def parse_product_info(characteristics: str) -> dict:
         value = parts[i + 1].strip()
         temp_dict[key] = value
 
-    # формируем результат: все needed_keys, если значение есть — берём, иначе ""
-    parsed = {key: temp_dict.get(key, "") for key in needed_keys}
+    parsed = {key: temp_dict.get(key, "") for key in NEEDED_KEYS}
 
     return parsed
-    # return json.dumps(parsed, ensure_ascii=False, indent=None)
-
 
 class SensorenNewParser(BaseParser):
     def __init__(self, driver: webdriver.Chrome):
@@ -145,7 +140,7 @@ class SensorenNewParser(BaseParser):
                     self.products.append({
                         'name': product_name,
                         'link': product_link,
-                        'info': product_info,
+                        # 'info': product_info,
                         'price': product_price,
                         **product_info_dict,
                     })
@@ -153,7 +148,7 @@ class SensorenNewParser(BaseParser):
                     log = {
                         'name': product_name,
                         'link': product_link,
-                        'info': product_info,
+                        # 'info': product_info,
                         'price': product_price,
                         **product_info_dict,
                         'page': self.current_page
