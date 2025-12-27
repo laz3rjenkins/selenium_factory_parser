@@ -62,7 +62,10 @@ class TekoParserNew(BaseParser):
                 product_links.append(product_link.get_attribute("href").strip())
             except selenium.common.exceptions.NoSuchElementException:
                 continue
+
         logger.warn(f"на странице обнаружено {len(product_links)} товаров")
+        logger.warn(f"teco.com страница {self.current_page}")
+
         for link in product_links:
             self.driver.get(link)
             time.sleep(.5)
