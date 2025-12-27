@@ -58,7 +58,7 @@ class TekoParserNew(BaseParser):
         product_links = []
         for product in products:
             try:
-                product_link = product.find_element(By.TAG_NAME, "a")
+                product_link = product.find_element(By.CSS_SELECTOR, "a.products-slider-name")
                 product_links.append(product_link.get_attribute("href").strip())
             except selenium.common.exceptions.NoSuchElementException:
                 continue
@@ -155,7 +155,6 @@ class TekoParserNew(BaseParser):
         self.driver.delete_all_cookies()
         catalog = [
             {'link': 'https://teko-com.ru/catalog/emkostnye-datchiki/', 'name': 'Емкостные датчики'},
-            {'link': 'https://teko-com.ru/catalog/opticheskie-datchiki/', 'name': 'Оптические датчики'},
             {'link': 'https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-polozheniya/',
              'name': 'Магниточувствительные датчики положения'},
             {'link': 'https://teko-com.ru/catalog/magnitochuvstvitelnye-datchiki-urovnya/',
@@ -182,6 +181,7 @@ class TekoParserNew(BaseParser):
             {'link': 'https://teko-com.ru/catalog/kontsevye-vyklyuchateli/', 'name': 'Концевые выключатели'},
             {'link': 'https://teko-com.ru/catalog/datchiki-temperatury/', 'name': 'Датчики температуры'},
             {'link': 'https://teko-com.ru/catalog/datchiki-davleniya/', 'name': 'Датчики давления'},
+            {'link': 'https://teko-com.ru/catalog/opticheskie-datchiki/', 'name': 'Оптические датчики'},
             {'link': 'https://teko-com.ru/catalog/induktivnye-datchiki/', 'name': 'Индуктивные датчики'},
         ]
 
