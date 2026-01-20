@@ -1,5 +1,7 @@
 import csv
+import datetime
 
+import pytz
 import selenium.common.exceptions
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -111,6 +113,7 @@ class TekoParserNew(BaseParser):
                 # "info": info,
                 "link": product_link,
                 **product_info_dict,
+                'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
             })
 
         except Exception as e:

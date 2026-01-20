@@ -1,8 +1,8 @@
 import csv
+import datetime
 import os
-import re
 
-import selenium.common.exceptions
+import pytz
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,13 +16,16 @@ NEEDED_KEYS = [
     "Типоразмер",
     "Номинальное расстояние срабатывания [Sn]",
     "Тип коммутации",
-    "Способ установки в металл",
+    "Способ установки",
     "Диапазон рабочих температур",
     "Климатическое исполнение",
     "Длина кабеля",
     "Материал корпуса",
+    "Материал корпуса сенсора",
+    "Рабочее напряжение",
+    "Диапазон питания",
     "Диапазон питающего напряжения",
-    "Тип коммутации | Схема подключения",
+    "Схема подключения",
     "Электрическое подключение",
 ]
 
@@ -122,22 +125,23 @@ class BeskontaRuNewParser(BaseParser):
                     except Exception as price_exc:
                         logger.error(str(price_exc))
 
-                    product_info_dict = parse_product_info(specs_with_separator)
+                    articul = ""
+                    try:
+                        articul = self.driver.find_element(By.CLASS_NAME, "offerBarcode").text.strip()
+                    except Exception as e:
+                        logger.error(str(e))
 
+                    product_info_dict = parse_product_info(specs_with_separator)
                     product_price = self.driver.find_element(By.CLASS_NAME, "p-p-price").text.strip()
+
                     self.products.append({
                         'link': product_link,
                         'name': product_name,
+                        'articul': articul,
                         # 'info': specs_with_separator,
                         'price': product_price,
                         **product_info_dict,
-                    })
-
-                    print({
-                        'link': product_link,
-                        'name': product_name,
-                        # 'info': specs_with_separator,
-                        'price': product_price,
+                        'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
                     })
 
                 except Exception as exc:

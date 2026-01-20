@@ -1,7 +1,9 @@
 import csv
+import datetime
 import os
 import re
 
+import pytz
 import selenium.common.exceptions
 from selenium import webdriver
 from selenium.webdriver import Keys
@@ -112,7 +114,8 @@ class SensorComRuParser(BaseParser):
                         # 'info': product_information_text,
                         'is_available': is_product_available,
                         'price': product_price,
-                        **product_info_dict
+                        **product_info_dict,
+                        'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
                     })
 
                 except Exception as e:

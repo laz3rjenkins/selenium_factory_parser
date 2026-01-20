@@ -4,7 +4,6 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import traceback
 from selenium.common.exceptions import InvalidSessionIdException, WebDriverException
-import os
 
 from parsers.factory import get_parser
 from utils import logger
@@ -54,8 +53,6 @@ def run():
         "sensor-com.ru",
         "mega-k.com",
         "beskonta.ru",
-        # "balluff-rus.ru",
-        "sensoren.ru",
         "teko-com.ru",
     ]
 
