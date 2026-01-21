@@ -123,7 +123,7 @@ class SensorComDeepParser(BaseParser):
                     is_product_available = ""
                     try:
                         product_box_available_div = self.driver.find_element(By.CLASS_NAME,
-                                                                         'navigation-box__available')
+                                                                         'navigation-product__available')
                         is_product_available = product_box_available_div.text.strip()
                     except Exception as exception:
                         product_box_available_div = self.driver.find_element(By.CLASS_NAME,
