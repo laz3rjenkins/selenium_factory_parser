@@ -1,0 +1,234 @@
+import csv
+import datetime
+import os
+import re
+
+import pytz
+import selenium.common.exceptions
+from selenium import webdriver
+from selenium.webdriver import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+
+from parsers.base_parser import BaseParser
+from utils import logger
+
+NEEDED_KEYS = [
+    "Размер корпуса",
+    "Расстояние срабатывания Sn, мм",
+    "Функция выхода",
+    "Монтажное исполнение",
+    "Температура окружающей среды",
+    "Длина кабеля, м",
+    "Материал корпуса",
+    "Рабочее напряжение, В",
+    "Схема выхода",
+    "Вид подключения",
+]
+
+def parse_product_info(characteristics: str) -> dict:
+    parts = characteristics.split("%;%")
+    temp_dict = {}
+
+    for i in range(0, len(parts) - 1, 2):
+        key = parts[i].strip()
+        value = parts[i + 1].strip()
+        temp_dict[key] = value
+
+    parsed = {key: temp_dict.get(key, "") for key in NEEDED_KEYS}
+
+    return parsed
+
+class SensorComDeepParser(BaseParser):
+    def __init__(self, driver: webdriver.Chrome):
+        super().__init__(driver)
+
+        self.driver = driver
+        self.current_page = 1
+        self.max_page = 1
+        self.products = []
+        self.product_links_from_current_catalog = []
+
+    def show_maximum_products_count(self):
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "/html/body/section[2]/div/div[2]/div[2]/div[2]/div[1]/button"))
+            )
+
+            self.driver.execute_script(
+                '$(".nativejs-select__placeholder")[1].click();$(".nativejs-select__option")[7].click();')
+            time.sleep(.5)
+        except Exception as e:
+            logger.error("show_maximum_products_count error " + str(e))
+            return
+
+    def calculate_max_page_count(self):
+        try:
+            last_page_button = self.driver.find_element(By.XPATH, '//*[@id="pager-app"]/div/ul/li[7]/a')
+            max_page = last_page_button.text.strip()
+
+            return int(max_page)
+        except Exception as e:
+            logger.error("calculate_max_page_count error " + str(e))
+            return 1
+
+    def get_all_product_links(self):
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "subcatalog-page__products-list"))
+            )
+            time.sleep(.5)
+            products = self.driver.find_elements(By.CLASS_NAME, "product-box")
+            for product in products:
+                try:
+                    product_title = product.find_element(By.CLASS_NAME, "product-box__title")
+                    product_tag_a = product_title.find_element(By.TAG_NAME, "a")
+                    product_link = product_tag_a.get_attribute('href').strip()
+
+                    self.product_links_from_current_catalog.append(product_link)
+
+                except Exception as e:
+                    logger.error(f"Ошибка при обработке товара: {e}")
+        except Exception as e:
+            logger.error(f"Ошибка при загрузке товаров: {e}")
+
+    def collect_product_data(self):
+        for product_link in self.product_links_from_current_catalog:
+            try:
+                self.driver.get(product_link)
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "product-page__title"))
+                )
+
+                try:
+                    product_title = self.driver.find_element(By.CLASS_NAME, "product-page__title").text.strip()
+
+                    # открываю характеристики
+                    try:
+                        self.driver.execute_script("window.scrollBy(0, 500);")
+                        time.sleep(.3)
+                    except Exception as exception:
+                        logger.error(str(exception))
+                    self.driver.find_elements(By.CLASS_NAME, "product-page__tab")[1].click()
+                    time.sleep(.5)
+
+                    product_information_text = self.driver.find_element(By.CLASS_NAME,
+                                                                    'char-table').text.strip()
+                    product_information_text = product_information_text.replace("\n", "%;%").strip()
+
+                    product_info_dict = parse_product_info(product_information_text)
+
+                    is_product_available = ""
+                    try:
+                        product_box_available_div = self.driver.find_element(By.CLASS_NAME,
+                                                                         'navigation-box__available')
+                        is_product_available = product_box_available_div.text.strip()
+                    except Exception as exception:
+                        product_box_available_div = self.driver.find_element(By.CLASS_NAME,
+                                                                         'navigation-product__notavailable')
+                        is_product_available = product_box_available_div.text.strip()
+
+                    product_price = self.driver.find_element(By.CLASS_NAME, 'navigation-product__price').text.strip()
+                except Exception as exc:
+                    print(exc)
+                    continue
+
+                self.products.append({
+                    'name': product_title,
+                    'link': product_link,
+                    'is_available': is_product_available,
+                    'price': product_price,
+                    **product_info_dict,
+                    'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
+                })
+
+            except Exception as e:
+                logger.error(f"Ошибка при обработке товара: {e}")
+
+    def parse(self):
+        catalog_links = [
+            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/ultrazvukovyie/",  # 1
+            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/emkostnyie-2/",  # 8
+            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/opticheskie/",  # 10
+            "https://sensor-com.ru/catalog/datchiki-pozitsionirovaniya-i-nalichiya-obyektov/induktivnyie/",  # 123
+        ]
+        self.driver.delete_all_cookies()
+
+        for catalog_link in catalog_links:
+            self.driver.get(catalog_link)
+            time.sleep(3)
+            logger.warn(f"начал парсинг по ссылке {catalog_link}")
+
+            self.show_maximum_products_count()
+            time.sleep(2)
+
+            self.products = []
+            self.product_links_from_current_catalog = []
+            self.current_page = 1
+            self.max_page = self.calculate_max_page_count()
+            title = self.driver.find_element(By.CLASS_NAME, "title-h1").text.strip()
+
+            # собираю ссылки со всех товаров в текущем каталоге
+            while True:
+                logger.warn(f"Собираю все ссылки на странице {self.current_page}")
+                self.get_all_product_links()
+
+                if self.current_page >= self.max_page:
+                    break
+
+                self.current_page += 1
+                self.go_to_the_next_page()
+
+            logger.warn(f"Всего ссылок в каталоге {len(self.product_links_from_current_catalog)}")
+            # здесь уже собраны все ссылки и начинается парсинг по ссылкам
+            self.collect_product_data()
+
+            logger.warn(f"{title} has {len(self.products)} elements")
+            self.save_to_csv(title)
+
+        logger.warn("sensor.com finished.")
+
+    def save_to_csv(self, filename):
+        """Сохранение данных в CSV."""
+
+        filename = os.path.join("files", "sensor_com", f"sensor_com_data_{sanitize_filename(filename)}.csv")
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+        if not self.products:
+            logger.warn("Нет данных для сохранения")
+            return
+
+        fieldnames = list(self.products[0].keys())
+
+        with open(filename, mode="w", encoding="utf-8-sig", newline="") as file:
+            writer = csv.DictWriter(file,
+                                    fieldnames=fieldnames,
+                                    delimiter=";")
+            writer.writeheader()
+            for product in self.products:
+                row = {key: product.get(key, "") for key in fieldnames}
+                if "info" in row:
+                    row["info"] = row["info"].replace("\n", "; ")
+                writer.writerow(row)
+
+    def go_to_the_next_page(self):
+        pagination_input = self.driver.find_element(By.CLASS_NAME, "pagination-block__pagination-input")
+        pagination_input.clear()
+        pagination_input.send_keys(str(self.current_page))
+        pagination_input.send_keys(Keys.ENTER)
+        time.sleep(2)
+
+
+def sanitize_filename(filename: str) -> str:
+    '''
+    Метод для обработки строки, чтобы создать валидный csv файл
+    :param filename:
+    :return:
+    '''
+    sanitized = re.sub(r'[\/:*?"<>|]', '_', filename)
+    sanitized = sanitized.strip()
+    sanitized = re.sub(r'_+', '_', sanitized)
+
+    return sanitized
