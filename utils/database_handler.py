@@ -9,10 +9,11 @@ class DatabaseHandler:
     def __init__(self):
         #todo: вынести в .env
         config = {
-            'host': 'localhost',
-            'user': 'root',
+            'host': '127.0.0.1',
+            'user': 'lazer',
             'password': 'lazer',
-            'database': 'ais_db'
+            'database': 'ais_db',
+            'port': 3306,
         }
         self.conn = mysql.connector.connect(**config)
         self.cursor = self.conn.cursor(dictionary=True)
