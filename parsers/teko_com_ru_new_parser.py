@@ -12,6 +12,7 @@ import os
 
 from utils import logger
 from parsers.base_parser import BaseParser
+from utils.database_handler import DatabaseHandler
 
 NEEDED_KEYS = [
     "Размер прямоугольного корпуса, мм",
@@ -48,6 +49,10 @@ class TekoParserNew(BaseParser):
         self.current_page = 1
         self.max_page_count = None
         self.products = []
+
+        self.db = DatabaseHandler()
+        self.site_key = 'teco'
+        self.mappings, self.mapping_ids, self.chars = self.db.get_mappings(self.site_key)
 
     def open_next_page(self, link: str):
         self.driver.get(f"{link}?PAGEN_3={self.current_page}")
@@ -105,7 +110,7 @@ class TekoParserNew(BaseParser):
 
             product_info_dict = parse_product_info(info)
 
-            self.products.append({
+            current_data = {
                 "name": product_name,
                 # "model": product_model,
                 "price": product_price,
@@ -114,7 +119,17 @@ class TekoParserNew(BaseParser):
                 "link": product_link,
                 **product_info_dict,
                 'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
-            })
+            }
+
+            self.products.append(current_data)
+
+            self.db.save_product(
+                self.site_key,
+                current_data,
+                self.mappings,
+                self.mapping_ids,
+                self.chars
+            )
 
         except Exception as e:
             logger.error(f"Ошибка при загрузке товаров: {str(e)}")
@@ -233,3 +248,4 @@ class TekoParserNew(BaseParser):
             self.save_to_csv(link['name'])
 
         logger.warn("TECO COM succeed")
+        logger.ready(self.site_key)

@@ -6,7 +6,6 @@ import re
 import pytz
 import selenium.common.exceptions
 from selenium import webdriver
-from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -14,6 +13,7 @@ import time
 
 from parsers.base_parser import BaseParser
 from utils import logger
+from utils.database_handler import DatabaseHandler
 
 NEEDED_KEYS = [
     "Размеры упаковки",
@@ -61,6 +61,10 @@ class MegakRuNewParser(BaseParser):
         self.current_page = 1
         self.limit = 100
         self.products = []
+
+        self.db = DatabaseHandler()
+        self.site_key = 'megak'
+        self.mappings, self.mapping_ids, self.chars = self.db.get_mappings(self.site_key)
 
     def get_subcategories_links(self):
         subcategories = self.driver.find_elements(By.CLASS_NAME, "product-categories-item-slim")
@@ -149,7 +153,7 @@ class MegakRuNewParser(BaseParser):
 
                     product_price = self.driver.find_element(By.CLASS_NAME, "price").text.strip()
 
-                    self.products.append({
+                    current_data = {
                         "name": product_name,
                         "price": product_price,
                         "description": description,
@@ -157,7 +161,17 @@ class MegakRuNewParser(BaseParser):
                         "link": link,
                         **product_info_dict,
                         'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
-                    })
+                    }
+
+                    self.products.append(current_data)
+
+                    self.db.save_product(
+                        self.site_key,
+                        current_data,
+                        self.mappings,
+                        self.mapping_ids,
+                        self.chars
+                    )
 
                 except Exception as e:
                     logger.error(str(f"Ошибка при обработке товара: {e}"))
@@ -226,6 +240,8 @@ class MegakRuNewParser(BaseParser):
                             save_to_csv(self.products, filename)
                 except Exception as e:
                     logger.error(f"Не удалось получить данные из {subcategory['link']}: {str(e)}")
+
+        logger.ready(self.site_key)
 
 
 def save_to_csv(data, filename):

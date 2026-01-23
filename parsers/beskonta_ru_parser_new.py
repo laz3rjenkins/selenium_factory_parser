@@ -11,6 +11,7 @@ import time
 
 from parsers.base_parser import BaseParser
 from utils import logger
+from utils.database_handler import DatabaseHandler
 
 NEEDED_KEYS = [
     "Типоразмер",
@@ -54,6 +55,10 @@ class BeskontaRuNewParser(BaseParser):
         self.current_page = 1
         self.limit = 45
         self.products = []
+
+        self.db = DatabaseHandler()
+        self.site_key = 'beskonta'
+        self.mappings, self.mapping_ids, self.chars = self.db.get_mappings(self.site_key)
 
     def has_content(self):
         current_url = self.driver.current_url
@@ -134,7 +139,7 @@ class BeskontaRuNewParser(BaseParser):
                     product_info_dict = parse_product_info(specs_with_separator)
                     product_price = self.driver.find_element(By.CLASS_NAME, "p-p-price").text.strip()
 
-                    self.products.append({
+                    current_data = {
                         'link': product_link,
                         'name': product_name,
                         'articul': articul,
@@ -142,7 +147,17 @@ class BeskontaRuNewParser(BaseParser):
                         'price': product_price,
                         **product_info_dict,
                         'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
-                    })
+                    }
+
+                    self.products.append(current_data)
+
+                    self.db.save_product(
+                        self.site_key,
+                        current_data,
+                        self.mappings,
+                        self.mapping_ids,
+                        self.chars
+                    )
 
                 except Exception as exc:
                     logger.error(f"Ошибка при обработке товара: {exc}")
@@ -188,3 +203,4 @@ class BeskontaRuNewParser(BaseParser):
             self.current_page += 1
 
         self.save_to_csv()
+        logger.ready(self.site_key)

@@ -14,6 +14,7 @@ import time
 
 from parsers.base_parser import BaseParser
 from utils import logger
+from utils.database_handler import DatabaseHandler
 
 NEEDED_KEYS = [
     "Размер корпуса",
@@ -50,6 +51,10 @@ class SensorComDeepParser(BaseParser):
         self.max_page = 1
         self.products = []
         self.product_links_from_current_catalog = []
+
+        self.db = DatabaseHandler()
+        self.site_key = 'sensor'
+        self.mappings, self.mapping_ids, self.chars = self.db.get_mappings(self.site_key)
 
     def show_maximum_products_count(self):
         try:
@@ -135,14 +140,24 @@ class SensorComDeepParser(BaseParser):
                     print(exc)
                     continue
 
-                self.products.append({
+                current_data = {
                     'name': product_title,
                     'link': product_link,
                     'is_available': is_product_available,
                     'price': product_price,
                     **product_info_dict,
                     'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
-                })
+                }
+
+                self.products.append(current_data)
+
+                self.db.save_product(
+                    self.site_key,
+                    current_data,
+                    self.mappings,
+                    self.mapping_ids,
+                    self.chars
+                )
 
             except Exception as e:
                 logger.error(f"Ошибка при обработке товара: {e}")
@@ -189,6 +204,7 @@ class SensorComDeepParser(BaseParser):
             self.save_to_csv(title)
 
         logger.warn("sensor.com finished.")
+        logger.ready(self.site_key)
 
     def save_to_csv(self, filename):
         """Сохранение данных в CSV."""
