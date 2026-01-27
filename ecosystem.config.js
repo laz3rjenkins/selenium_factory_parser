@@ -7,7 +7,7 @@ module.exports = {
       cwd: "/home/selenium_factory_parser",
       watch: false,
       autorestart: false,
-      max_restarts: 10,
+      max_restarts: 0,
       env: {
         PYTHONUNBUFFERED: "1",
         DISPLAY: "",

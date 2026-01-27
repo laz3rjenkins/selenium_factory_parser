@@ -145,24 +145,6 @@ class SensorenNewParser(BaseParser):
                         **product_info_dict,
                     })
 
-                    log = {
-                        'name': product_name,
-                        'link': product_link,
-                        # 'info': product_info,
-                        'price': product_price,
-                        **product_info_dict,
-                        'page': self.current_page
-                    }
-
-                    log_path = os.path.join(os.getcwd(), "log.txt")
-
-                    try:
-                        with open(log_path, "w", encoding="utf-8") as file:
-                            json.dump(log, file, ensure_ascii=False, indent=4)
-                            # file.write("\n")
-                    except Exception as e:
-                        logger.error(f"Ошибка при записи log.txt: {e}")
-
                 except Exception as e:
                     logger.error(f"Ошибка при обработке товара: {e}")
 
