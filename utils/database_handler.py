@@ -1,9 +1,7 @@
 import mysql.connector
-import json
 
 import utils.logger as logger
 import datetime
-import pytz
 
 class DatabaseHandler:
     def __init__(self):
