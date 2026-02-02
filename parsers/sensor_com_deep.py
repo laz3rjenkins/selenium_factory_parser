@@ -116,8 +116,11 @@ class SensorComDeepParser(BaseParser):
                         time.sleep(.3)
                     except Exception as exception:
                         logger.error(str(exception))
-                    self.driver.find_elements(By.CLASS_NAME, "product-page__tab")[1].click()
-                    time.sleep(.5)
+
+                    page_tabs = self.driver.find_elements(By.CLASS_NAME, "product-page__tab")
+                    if page_tabs[1].text.strip() == "Характеристики":
+                        self.driver.find_elements(By.CLASS_NAME, "product-page__tab")[1].click()
+                        time.sleep(.5)
 
                     product_information_text = self.driver.find_element(By.CLASS_NAME,
                                                                     'char-table').text.strip()
