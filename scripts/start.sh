@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Указываем полный путь к PM2 (замени на свой из шага 1)
-PM2=/usr/bin/pm2
+PM2=/usr/local/bin/pm2
 
 # Проверяем статус, используя полный путь
 $PM2 describe selen_parser >/dev/null 2>&1
