@@ -139,6 +139,7 @@ class BeskontaRuNewParser(BaseParser):
                     product_info_dict = parse_product_info(specs_with_separator)
                     product_price = self.driver.find_element(By.CLASS_NAME, "p-p-price").text.strip()
 
+                    parsed_at = datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S')
                     current_data = {
                         'link': product_link,
                         'name': product_name,
@@ -146,7 +147,7 @@ class BeskontaRuNewParser(BaseParser):
                         # 'info': specs_with_separator,
                         'price': product_price,
                         **product_info_dict,
-                        'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
+                        'parsed_at': parsed_at,
                     }
 
                     self.products.append(current_data)
@@ -158,6 +159,15 @@ class BeskontaRuNewParser(BaseParser):
                         self.mapping_ids,
                         self.chars
                     )
+
+                    # todo вынести в метод
+                    try:
+                        created_product = self.db.get_product(self.site_key, product_name)
+                        product_id = created_product['id']
+
+                        self.db.add_data_price(product_id, articul, parsed_at)
+                    except Exception as price_exc:
+                        logger.error(f"{self.site_key} не удалось найти продукт или добавить информацию о нем в data_from_price")
 
                 except Exception as exc:
                     logger.error(f"Ошибка при обработке товара: {exc}")

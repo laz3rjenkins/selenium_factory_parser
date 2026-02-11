@@ -110,6 +110,7 @@ class TekoParserNew(BaseParser):
 
             product_info_dict = parse_product_info(info)
 
+            parsed_at = datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S')
             current_data = {
                 "name": product_name,
                 # "model": product_model,
@@ -118,7 +119,7 @@ class TekoParserNew(BaseParser):
                 # "info": info,
                 "link": product_link,
                 **product_info_dict,
-                'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
+                'parsed_at': parsed_at,
             }
 
             self.products.append(current_data)
@@ -130,6 +131,16 @@ class TekoParserNew(BaseParser):
                 self.mapping_ids,
                 self.chars
             )
+
+            # todo вынести в метод
+            try:
+                created_product = self.db.get_product(self.site_key, product_name)
+                product_id = created_product['id']
+
+                self.db.add_data_price(product_id, None, parsed_at)
+            except Exception as price_exc:
+                logger.error(
+                    f"{self.site_key} не удалось найти продукт или добавить информацию о нем в data_from_price")
 
         except Exception as e:
             logger.error(f"Ошибка при загрузке товаров: {str(e)}")

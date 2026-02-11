@@ -143,13 +143,14 @@ class SensorComDeepParser(BaseParser):
                     print(exc)
                     continue
 
+                parsed_at = datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S')
                 current_data = {
                     'name': product_title,
                     'link': product_link,
                     'is_available': is_product_available,
                     'price': product_price,
                     **product_info_dict,
-                    'parsed_at': datetime.datetime.now(pytz.timezone('Asia/Yekaterinburg')).strftime('%Y-%m-%d %H:%M:%S'),
+                    'parsed_at': parsed_at,
                 }
 
                 self.products.append(current_data)
@@ -161,6 +162,15 @@ class SensorComDeepParser(BaseParser):
                     self.mapping_ids,
                     self.chars
                 )
+
+                # todo вынести в метод
+                try:
+                    created_product = self.db.get_product(self.site_key, product_title)
+                    product_id = created_product['id']
+
+                    self.db.add_data_price(product_id, None, parsed_at)
+                except Exception as price_exc:
+                    logger.error(f"{self.site_key} не удалось найти продукт или добавить информацию о нем в data_from_price")
 
             except Exception as e:
                 logger.error(f"Ошибка при обработке товара: {e}")

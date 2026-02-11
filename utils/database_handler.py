@@ -94,3 +94,36 @@ class DatabaseHandler:
         except Exception as e:
             self.conn.rollback()
             logger.error(f"DB Error: {e}")
+
+    def get_product(self, site, product_name):
+        self.cursor.execute(
+            "SELECT * FROM products WHERE source_site = %s AND name = %s",
+            (site, product_name)
+        )
+        product = self.cursor.fetchone()
+
+        return product
+
+    def add_data_price(self, product_id, articul, parsed_at):
+        # 1. Проверяем, существует ли уже такая запись
+        check_query = "SELECT * FROM data_from_price WHERE id_product = %s"
+        self.cursor.execute(check_query, (str(product_id),))
+        exists = self.cursor.fetchone()
+
+        if exists:
+            # 2. Если запись есть — делаем UPDATE
+            query = """
+                UPDATE data_from_price 
+                SET article = %s, date_parsing = %s 
+                WHERE id_product = %s
+            """
+            self.cursor.execute(query, (articul, parsed_at, product_id))
+        else:
+            # 3. Если записи нет — делаем INSERT
+            query = """
+                INSERT INTO data_from_price (id_product, article, date_parsing)
+                VALUES (%s, %s, %s)
+            """
+            self.cursor.execute(query, (product_id, articul, parsed_at))
+
+        self.conn.commit()
